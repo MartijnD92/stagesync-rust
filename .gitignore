@@ -1,0 +1,6 @@
+/node_modules
+/frontend/dist
+/.cargo/.build
+.env*
+.DS_Store
+stagesync.db

@@ -1,0 +1,7 @@
+[alias]
+fullstack="run --bin fullstack"
+backend="run --bin backend"
+frontend="run --bin frontend"
+
+[build]
+target-dir=".cargo/.build"
