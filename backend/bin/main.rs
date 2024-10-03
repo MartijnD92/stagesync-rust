@@ -1,13 +1,9 @@
-extern crate dashboard;
-extern crate diesel;
-
+use anyhow::Result;
 use diesel::prelude::*;
-use std::error::Error;
 
-use self::dashboard::*;
-use crate::models::{Gig, Gigs};
+use backend::models::{Gig, Gigs};
 
-fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
+fn main() -> Result<()> {
     use self::schema::gigs::dsl::*;
 
     let conn = &mut establish_connection();
@@ -21,10 +17,10 @@ fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
         .filter(artist_id.eq(1))
         .select(Gig::as_select())
         .load(conn)
-        .expect("Error loading gigs");
+        .context("Error loading gigs");
 
     // let artist = create_post(&connection, name, gigs);
-    println!("Gigs for '{}':\n{}", artist , Gigs(artist_gigs));
+    println!("Gigs for '{}':\n{}", artist, Gigs(artist_gigs));
 
     Ok(())
 }

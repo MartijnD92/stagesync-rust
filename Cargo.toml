@@ -1,16 +1,22 @@
 [[bin]]
-name = "backend"
+name = "backend-build"
 path = ".cargo/bin/backend.rs"
 
 [[bin]]
-name = "frontend"
+name = "frontend-build"
 path = ".cargo/bin/frontend.rs"
 
 [[bin]]
-name = "stagesync"
-path = "backend/main.rs"
+name = "main"
+path = "backend/bin/main.rs"
+
+[lib]
+name = "backend"
+path = "backend/lib.rs"
 
 [dependencies]
+anyhow = "1.0.89"
+chrono = "0.4.38"
 diesel = { version = "2.2.0", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 # build libsqlite3 as part of the build process
 # uncomment this line if you run into setup issues
@@ -18,7 +24,7 @@ diesel = { version = "2.2.0", features = ["sqlite", "returning_clauses_for_sqlit
 dotenvy = "0.15"
 
 [package]
-default-run = "stagesync"
+default-run = "main"
 edition = "2021"
 name = "stagesync"
 publish = false

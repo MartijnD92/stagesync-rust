@@ -1,9 +1,9 @@
 pub mod models;
 pub mod schema;
 
-use crate::schema::*;
 use diesel::prelude::*;
-use dotenv::dotenv;
+use dotenvy::dotenv;
+use schema::*;
 use std::env;
 
 pub fn establish_connection() -> SqliteConnection {
@@ -14,11 +14,7 @@ pub fn establish_connection() -> SqliteConnection {
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
 }
 
-pub fn new_artist(
-    conn: &mut SqliteConnection,
-    name: &str,
-) -> QueryResult<usize> {
-
+pub fn new_artist(conn: &mut SqliteConnection, name: &str) -> QueryResult<usize> {
     diesel::insert_into(artists::table)
         .values(artists::name.eq(name))
         .execute(conn)
