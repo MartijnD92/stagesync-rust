@@ -2,18 +2,19 @@
 
 diesel::table! {
     artists (id) {
-        id -> Integer,
+        id -> Text,
         name -> Text,
+        created_at -> Text,
     }
 }
 
 diesel::table! {
     gigs (id) {
-        id -> Integer,
+        id -> Text,
         title -> Text,
         location -> Text,
         date -> Timestamp,
-        artist_id -> Integer,
+        artist_id -> Text,
     }
 }
 

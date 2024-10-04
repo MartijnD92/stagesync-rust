@@ -1,16 +1,20 @@
 use chrono::{DateTime, Local};
 use diesel::prelude::*;
+use itertools::Itertools;
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::ops::Deref;
+use uuid::Uuid;
 
 use crate::schema::{artists, gigs};
 
-#[derive(Queryable, Identifiable, Selectable, Debug, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Insertable)]
 #[diesel(table_name = artists)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Artist {
-    pub id: i32,
+    pub id: Uuid,
     pub name: String,
+    pub created_at: String,
 }
 
 #[derive(Queryable, Identifiable, Selectable, Associations, Debug, PartialEq)]
@@ -18,11 +22,11 @@ pub struct Artist {
 #[diesel(table_name = gigs)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Gig {
-    pub id: i32,
+    pub id: Uuid,
     pub title: String,
     pub location: String,
     pub date: chrono::NaiveDateTime,
-    pub artist_id: i32,
+    pub artist_id: String,
 }
 
 impl fmt::Display for Gig {
@@ -35,7 +39,7 @@ impl fmt::Display for Gig {
     }
 }
 
-// Necessary to display multiple gigs
+// This is necessary to display multiple gigs
 // See https://github.com/apolitical/impl-display-for-vec for reference
 pub struct Gigs(pub Vec<Gig>);
 
@@ -49,8 +53,13 @@ impl Deref for Gigs {
 
 impl fmt::Display for Gigs {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.0.iter().fold(Ok(()), |result, gig| {
-            result.and_then(|_| writeln!(f, "• {}", gig))
-        })
+        // self.0.iter().fold(Ok(()), |result, gig| {
+        //     result.and_then(|_| writeln!(f, "• {}", gig))
+        // })
+        let data_formatter = self
+            .0
+            .iter()
+            .format_with("\n", |gig, f| f(&format_args!("• {}", gig)));
+        write!(f, "{}", data_formatter)
     }
 }

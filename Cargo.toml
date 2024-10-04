@@ -8,20 +8,21 @@ path = ".cargo/bin/frontend.rs"
 
 [[bin]]
 name = "main"
-path = "backend/bin/main.rs"
-
-[lib]
-name = "backend"
-path = "backend/lib.rs"
+path = "backend/main.rs"
 
 [dependencies]
+actix-web = "4.9.0"
 anyhow = "1.0.89"
 chrono = "0.4.38"
-diesel = { version = "2.2.0", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
-# build libsqlite3 as part of the build process
+diesel = { version = "2.2.0", features = ["sqlite", "chrono", "r2d2", "uuid"] }
+# build libsqlite3 as part of the build proces
 # uncomment this line if you run into setup issues
 # libsqlite3-sys = { version = "0.30", features = ["bundled"] }
 dotenvy = "0.15"
+itertools = "0.13.0"
+serde = { version = "1.0.210", features = ["derive"] }
+serde_json = "1.0.128"
+uuid = { version =  "1.10.0",  features = ["v4", "serde"] }
 
 [package]
 default-run = "main"
