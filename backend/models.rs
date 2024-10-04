@@ -1,32 +1,34 @@
 use chrono::{DateTime, Local};
 use diesel::prelude::*;
+
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::ops::Deref;
+
 use uuid::Uuid;
 
 use crate::schema::{artists, gigs};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable, Insertable)]
 #[diesel(table_name = artists)]
-#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+#[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Artist {
     pub id: Uuid,
     pub name: String,
     pub created_at: String,
 }
 
-#[derive(Queryable, Identifiable, Selectable, Associations, Debug, PartialEq)]
+#[derive(Debug, PartialEq, Queryable, Identifiable, Selectable, Associations)]
 #[diesel(belongs_to(Artist))]
 #[diesel(table_name = gigs)]
-#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+#[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Gig {
     pub id: Uuid,
     pub title: String,
     pub location: String,
     pub date: chrono::NaiveDateTime,
-    pub artist_id: String,
+    pub artist_id: Uuid,
 }
 
 impl fmt::Display for Gig {

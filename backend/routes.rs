@@ -1,6 +1,7 @@
 use crate::db;
 use crate::models;
-use actix_web::{get, post, web, Error, HttpResponse};
+use actix_files::NamedFile;
+use actix_web::{get, post, web, Error, HttpResponse, Responder};
 use anyhow::Result;
 use diesel::{
     prelude::*,
@@ -8,7 +9,11 @@ use diesel::{
 };
 use serde_json::json;
 
-type DbPool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
+type DbPool = r2d2::Pool<ConnectionManager<PgConnection>>;
+
+pub async fn index() -> impl Responder {
+    NamedFile::open_async("./static/index.html").await.unwrap()
+}
 
 #[post("/artists/create")]
 pub async fn create_artist(

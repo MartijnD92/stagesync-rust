@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS artists (
-    id    VARCHAR PRIMARY KEY NOT NULL,
-    "name"  VARCHAR NOT NULL,
+    id    UUID PRIMARY KEY NOT NULL,
+    name  VARCHAR NOT NULL,
     created_at VARCHAR NOT NULL
 )

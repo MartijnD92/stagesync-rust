@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 type DbError = Box<dyn std::error::Error + Send + Sync>;
 
-pub fn insert_new_artist(conn: &mut SqliteConnection, nm: &str) -> Result<Artist, DbError> {
+pub fn insert_new_artist(conn: &mut PgConnection, nm: &str) -> Result<Artist, DbError> {
     use crate::schema::artists::dsl::*;
 
     let new_artist = Artist {
