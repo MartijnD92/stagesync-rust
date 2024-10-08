@@ -1,7 +1,7 @@
-CREATE TABLE IF NOT EXISTS gigs (
+CREATE TABLE IF NOT EXISTS gig (
     id    UUID PRIMARY KEY NOT NULL,
     title VARCHAR NOT NULL,
     location  TEXT NOT NULL,
     date  TIMESTAMP NOT NULL,
-    artist_id UUID NOT NULL REFERENCES artists(id)
+    artist_id UUID NOT NULL REFERENCES artist(id)
 )

@@ -1,4 +1,4 @@
-use crate::models::*;
+use crate::models::artist::*;
 use chrono::{DateTime, Utc};
 use diesel::prelude::*;
 use std::time::SystemTime;
@@ -24,11 +24,17 @@ pub fn insert_new_artist(conn: &mut PgConnection, nm: &str) -> Result<Artist, Db
 
 pub fn find_artist_by_uuid(conn: &mut PgConnection, uuid: Uuid) -> Result<Option<Artist>, DbError> {
     use crate::schema::artists::dsl::*;
+    use crate::schema::gigs::dsl::gigs;
 
     let artist = artists
         .filter(id.eq(uuid))
         .first::<Artist>(conn)
         .optional()?;
+
+    if let Some(a) = artist {
+        let gigs = Gig::belonging_to(&a)
+            .select(Gig::as_select())
+    } 
 
     Ok(artist)
 }
