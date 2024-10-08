@@ -22,8 +22,26 @@ pub fn insert_new_artist(conn: &mut PgConnection, nm: &str) -> Result<Artist, Db
     Ok(new_artist)
 }
 
+pub fn find_artist_by_uuid(conn: &mut PgConnection, uuid: Uuid) -> Result<Option<Artist>, DbError> {
+    use crate::schema::artists::dsl::*;
+
+    let artist = artists
+        .filter(id.eq(uuid))
+        .first::<Artist>(conn)
+        .optional()?;
+
+    Ok(artist)
+}
+
 fn iso_date() -> String {
     let now = SystemTime::now();
     let now: DateTime<Utc> = now.into();
     now.to_rfc3339()
+}
+
+pub fn get_all_gigs(conn: &mut PgConnection) -> Result<Gigs, DbError> {
+    use crate::schema::gigs;
+
+    let gigs_data: Vec<Gig> = gigs::table.get_results(conn)?;
+    Ok(Gigs(gigs_data))
 }

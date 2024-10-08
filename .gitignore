@@ -1,5 +1,5 @@
 /node_modules
-/frontend/dist
+/ui/dist
 /.cargo/.build
 .env*
 .DS_Store

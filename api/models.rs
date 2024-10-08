@@ -19,7 +19,17 @@ pub struct Artist {
     pub created_at: String,
 }
 
-#[derive(Debug, PartialEq, Queryable, Identifiable, Selectable, Associations)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Queryable,
+    Identifiable,
+    Selectable,
+    Associations,
+)]
 #[diesel(belongs_to(Artist))]
 #[diesel(table_name = gigs)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
@@ -43,6 +53,7 @@ impl fmt::Display for Gig {
 
 // This is necessary to display multiple gigs
 // See https://github.com/apolitical/impl-display-for-vec for reference
+#[derive(Serialize, Deserialize)]
 pub struct Gigs(pub Vec<Gig>);
 
 impl Deref for Gigs {
