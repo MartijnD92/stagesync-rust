@@ -1,5 +1,5 @@
-use crate::db;
-use crate::models;
+use super::db;
+use super::models::artist::*;
 use actix_files::NamedFile;
 use actix_web::{get, post, web, Error, HttpResponse, Responder};
 use diesel::{
@@ -18,11 +18,11 @@ pub async fn index() -> impl Responder {
 #[post("/artists/create")]
 pub async fn create_artist(
     pool: web::Data<DbPool>,
-    form: web::Json<models::Artist>,
+    form: web::Json<ArtistRequest>,
 ) -> Result<HttpResponse, Error> {
     let artist = web::block(move || {
         let mut conn = pool.get()?;
-        db::insert_new_artist(&mut conn, &form.name)
+        db::insert_new_artist(&mut conn, form)
     })
     .await?
     .map_err(actix_web::error::ErrorUnprocessableEntity)?;
@@ -63,7 +63,7 @@ pub async fn get_gigs(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
         let mut conn = pool.get()?;
         db::get_all_gigs(&mut conn)
     })
-    .await? 
+    .await?
     .map_err(actix_web::error::ErrorInternalServerError)?;
 
     if !gigs.is_empty() {

@@ -2,6 +2,8 @@ CREATE TABLE IF NOT EXISTS gig (
     id    UUID PRIMARY KEY NOT NULL,
     title VARCHAR NOT NULL,
     location  TEXT NOT NULL,
-    date  TIMESTAMP NOT NULL,
-    artist_id UUID NOT NULL REFERENCES artist(id)
+    date  TIMESTAMP NOT NULL DEFAULT NOW(),
+    artist_id UUID NOT NULL REFERENCES artist(id),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 )

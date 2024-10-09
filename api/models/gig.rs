@@ -7,24 +7,15 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::ops::Deref;
 
-#[derive(Serialize, Deserialize, Debug, Queryable)]
+#[derive(Serialize, Deserialize, Debug, Identifiable, Queryable)]
+#[diesel(belongs_to(Artist, foreign_key = "id"))]
 #[diesel(table_name = gig)]
 pub struct Gig {
     pub id: uuid::Uuid,
     pub title: String,
     pub location: String,
     pub date: chrono::NaiveDateTime,
-    pub artist_id: Uuid,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
-}
-
-#[derive(Serialize, Deserialize, Debug, Insertable)]
-#[diesel(table_name = gig)]
-pub struct NewGig {
-    pub title: String,
-    pub location: String,
-    pub date: String,
+    pub artist_id: uuid::Uuid,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
 }

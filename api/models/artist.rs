@@ -1,44 +1,34 @@
+use crate::models::gig::Gigs;
 use crate::schema::artist;
+use bigdecimal::BigDecimal;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq, Queryable, AsChangeset)]
+use diesel::prelude::*;
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Insertable, Queryable)]
 #[diesel(table_name = artist)]
 pub struct Artist {
     pub id: uuid::Uuid,
     pub name: String,
     pub description: Option<String>,
-    pub image: String,
+    pub image: Option<String>,
     pub fee: BigDecimal,
     pub currency: String,
-    pub genre: String,
-    pub location: String,
+    pub genre: Option<String>,
+    pub location: Option<String>,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
 }
 
-#[derive(Debug, Clone, AsChangeset)]
-#[diesel(table_name = artist)]
-pub struct UpdateArtist {
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ArtistRequest {
     pub name: String,
     pub description: Option<String>,
-    pub image: String,
-    pub fee: BigDecimal,
+    pub image: Option<String>,
+    pub fee: f64,
     pub currency: String,
     pub genre: Option<String>,
-    pub updated_at: chrono::NaiveDateTime,
-}
-
-#[derive(Insertable)]
-#[diesel(table_name = artist)]
-pub struct NewArtist {
-    pub name: String,
-    pub description: Option<String>,
-    pub image: String,
-    pub fee: BigDecimal,
-    pub currency: String,
-    pub genre: Option<String>,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
+    pub location: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]

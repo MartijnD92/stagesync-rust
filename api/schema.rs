@@ -1,26 +1,32 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    artists (id) {
+    artist (id) {
         id -> Uuid,
         name -> Varchar,
-        created_at -> Varchar,
+        description -> Nullable<Text>,
+        image -> Nullable<Varchar>,
+        fee -> Numeric,
+        currency -> Varchar,
+        genre -> Nullable<Varchar>,
+        location -> Nullable<Text>,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
 diesel::table! {
-    gigs (id) {
+    gig (id) {
         id -> Uuid,
         title -> Varchar,
         location -> Text,
         date -> Timestamp,
         artist_id -> Uuid,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
-diesel::joinable!(gigs -> artists (artist_id));
+diesel::joinable!(gig -> artist (artist_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    artists,
-    gigs,
-);
+diesel::allow_tables_to_appear_in_same_query!(artist, gig,);

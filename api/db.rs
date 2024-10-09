@@ -1,21 +1,34 @@
-use crate::models::artist::*;
-use chrono::{DateTime, Utc};
+use super::models::artist::{Artist, ArtistRequest};
+use super::models::gig::{Gig, Gigs};
+
+use actix_web::web;
+use bigdecimal::{BigDecimal, FromPrimitive};
+use chrono::Utc;
 use diesel::prelude::*;
-use std::time::SystemTime;
 use uuid::Uuid;
 
 type DbError = Box<dyn std::error::Error + Send + Sync>;
 
-pub fn insert_new_artist(conn: &mut PgConnection, nm: &str) -> Result<Artist, DbError> {
-    use crate::schema::artists::dsl::*;
+pub fn insert_new_artist(
+    conn: &mut PgConnection,
+    data: web::Json<ArtistRequest>,
+) -> Result<Artist, DbError> {
+    use super::schema::artist::dsl::*;
 
     let new_artist = Artist {
         id: Uuid::new_v4(),
-        name: nm.to_owned(),
-        created_at: iso_date(),
+        name: data.name.to_owned(),
+        description: data.description,
+        fee: BigDecimal::from_f64(data.fee).expect("Failed to convert fee from f64 to big decimal"),
+        currency: data.currency,
+        image: data.image,
+        genre: data.genre,
+        location: data.location,
+        created_at: Utc::now().naive_utc(),
+        updated_at: Utc::now().naive_utc(),
     };
 
-    diesel::insert_into(artists)
+    diesel::insert_into(artist)
         .values(&new_artist)
         .execute(conn)?;
 
@@ -23,31 +36,21 @@ pub fn insert_new_artist(conn: &mut PgConnection, nm: &str) -> Result<Artist, Db
 }
 
 pub fn find_artist_by_uuid(conn: &mut PgConnection, uuid: Uuid) -> Result<Option<Artist>, DbError> {
-    use crate::schema::artists::dsl::*;
-    use crate::schema::gigs::dsl::gigs;
+    use super::schema::artist::dsl::{artist, id};
 
-    let artist = artists
+    let _artist = artist
         .filter(id.eq(uuid))
         .first::<Artist>(conn)
         .optional()?;
 
-    if let Some(a) = artist {
-        let gigs = Gig::belonging_to(&a)
-            .select(Gig::as_select())
-    } 
+    let gigs = Gig::belonging_to(&_artist).select(Gig::as_select());
 
-    Ok(artist)
-}
-
-fn iso_date() -> String {
-    let now = SystemTime::now();
-    let now: DateTime<Utc> = now.into();
-    now.to_rfc3339()
+    Ok(_artist)
 }
 
 pub fn get_all_gigs(conn: &mut PgConnection) -> Result<Gigs, DbError> {
-    use crate::schema::gigs;
+    use super::schema::gig;
 
-    let gigs_data: Vec<Gig> = gigs::table.get_results(conn)?;
+    let gigs_data: Vec<Gig> = gig::table.get_results(conn)?;
     Ok(Gigs(gigs_data))
 }

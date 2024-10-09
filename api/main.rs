@@ -8,11 +8,11 @@ use diesel::{
 use dotenvy::dotenv;
 use std::env;
 
-pub mod db;
-pub mod errors;
-pub mod models;
-pub mod routes;
-pub mod schema;
+mod db;
+mod errors;
+mod models;
+mod routes;
+mod schema;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
