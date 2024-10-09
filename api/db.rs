@@ -2,7 +2,6 @@ use super::models::artist::{Artist, ArtistRequest};
 use super::models::gig::{Gig, Gigs};
 
 use actix_web::web;
-use bigdecimal::{BigDecimal, FromPrimitive};
 use chrono::Utc;
 use diesel::prelude::*;
 use uuid::Uuid;
@@ -17,12 +16,12 @@ pub fn insert_new_artist(
 
     let new_artist = Artist {
         id: Uuid::new_v4(),
-        name: data.name.to_owned(),
-        description: data.description,
-        fee: BigDecimal::from_f64(data.fee).expect("Failed to convert fee from f64 to big decimal"),
+        name: data.name,
+        description: data.description.clone(),
+        fee: data.fee,
         currency: data.currency,
-        image: data.image,
-        genre: data.genre,
+        image: data.image.clone(),
+        genre: data.genre.clone(),
         location: data.location,
         created_at: Utc::now().naive_utc(),
         updated_at: Utc::now().naive_utc(),

@@ -16,10 +16,15 @@ actix-cors = "0.7.0"
 actix-files = "0.6.6"
 actix-web = "4.9.0"
 anyhow = "1.0.89"
-bigdecimal = { version = "0.4.5", features = ["serde"] }
-chrono = {version = "0.4.38", features = ["serde"] }
+chrono = { version = "0.4.38", features = ["serde"] }
 derive_more = { version = "1.0.0", features = ["display", "error"] }
-diesel = { version = "2.2.0", features = ["postgres", "chrono", "numeric", "r2d2", "uuid"] }
+diesel = { version = "2.2.0", features = [
+  "postgres",
+  "chrono",
+  "numeric",
+  "r2d2",
+  "uuid",
+] }
 # build libpq and openssl as part of the build process
 # uncomment these lines if you run into setup issues
 # pq-sys = { version = "0.6", features = ["bundled"] }
@@ -31,7 +36,7 @@ itertools = "0.13.0"
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
 thiserror = "1.0.64"
-uuid = { version =  "1.10.0",  features = ["v4", "serde"] }
+uuid = { version = "1.10.0", features = ["v4", "serde"] }
 
 [package]
 default-run = "main"

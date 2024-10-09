@@ -1,3 +1,4 @@
+use crate::models::artist::Artist;
 use crate::schema::gig;
 use chrono::{DateTime, Local};
 use diesel::prelude::*;
@@ -7,8 +8,8 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::ops::Deref;
 
-#[derive(Serialize, Deserialize, Debug, Identifiable, Queryable)]
-#[diesel(belongs_to(Artist, foreign_key = "id"))]
+#[derive(Serialize, Deserialize, Debug, Identifiable, Queryable, Associations)]
+#[diesel(belongs_to(Artist))]
 #[diesel(table_name = gig)]
 pub struct Gig {
     pub id: uuid::Uuid,

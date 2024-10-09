@@ -419,7 +419,6 @@ dependencies = [
  "num-bigint",
  "num-integer",
  "num-traits",
- "serde",
 ]
 
 [[package]]
@@ -1569,7 +1568,6 @@ dependencies = [
  "actix-files",
  "actix-web",
  "anyhow",
- "bigdecimal",
  "chrono",
  "derive_more 1.0.0",
  "diesel",

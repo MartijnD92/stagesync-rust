@@ -1,18 +1,17 @@
 use crate::models::gig::Gigs;
 use crate::schema::artist;
-use bigdecimal::BigDecimal;
 use serde::{Deserialize, Serialize};
 
 use diesel::prelude::*;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Insertable, Queryable)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Insertable, Queryable, Identifiable)]
 #[diesel(table_name = artist)]
 pub struct Artist {
     pub id: uuid::Uuid,
     pub name: String,
     pub description: Option<String>,
     pub image: Option<String>,
-    pub fee: BigDecimal,
+    pub fee: f64,
     pub currency: String,
     pub genre: Option<String>,
     pub location: Option<String>,
@@ -25,7 +24,7 @@ pub struct ArtistRequest {
     pub name: String,
     pub description: Option<String>,
     pub image: Option<String>,
-    pub fee: f64,
+    pub fee: i64,
     pub currency: String,
     pub genre: Option<String>,
     pub location: Option<String>,
