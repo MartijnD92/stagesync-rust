@@ -18,7 +18,7 @@ pub fn insert_new_artist(
         id: Uuid::new_v4(),
         name: data.name.clone(),
         description: data.description.clone(),
-        fee: data.fee.clone(),
+        fee: data.fee,
         currency: data.currency.clone(),
         image: data.image.clone(),
         genre: data.genre.clone(),
@@ -51,18 +51,18 @@ pub fn find_artist_by_uuid(
             .filter(artist_id.eq(artist.id))
             .load::<Gig>(connection)?;
 
-        let response = ArtistResponse {
+        let res = ArtistResponse {
             artist,
             gigs: Gigs(artist_gigs),
         };
 
-        Ok(Some(response))
+        Ok(Some(res))
     } else {
-        Ok(None) // No artist found with the given UUID
+        Ok(None)
     }
 }
 
-pub fn get_all_gigs(connection: &mut PgConnection) -> Result<Gigs, DbError> {
+pub fn find_all_gigs(connection: &mut PgConnection) -> Result<Gigs, DbError> {
     use super::schema::gigs;
 
     let gigs_data: Vec<Gig> = gigs::table.get_results(connection)?;

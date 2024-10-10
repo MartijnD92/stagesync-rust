@@ -14,6 +14,12 @@ mod models;
 mod routes;
 mod schema;
 
+#[allow(dead_code)]
+struct AppState {
+    app_name: String,
+    api_version: String,
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
@@ -43,11 +49,14 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(pool.clone()))
             .wrap(cors)
             .wrap(Logger::default())
-            .service(web::resource("/").to(routes::index))
-            .service(routes::create_artist)
-            .service(routes::get_artist_by_id)
-            .service(routes::get_gigs)
-            .service(Files::new("/", "./static"))
+            .service(
+                web::scope("/api/v1")
+                    .service(routes::create_artist)
+                    .service(routes::get_artist_by_id)
+                    .service(routes::get_gigs)
+                    .service(web::resource("/").to(routes::index))
+                    .service(Files::new("/", "./static")),
+            )
     })
     .workers(2) // TODO: How many do I need and do I actually have to specify this?
     .bind((server_addr, server_port))?

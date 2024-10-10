@@ -61,7 +61,7 @@ pub async fn get_artist_by_id(
 pub async fn get_gigs(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
     let gigs = web::block(move || {
         let mut conn = pool.get()?;
-        db::get_all_gigs(&mut conn)
+        db::find_all_gigs(&mut conn)
     })
     .await?
     .map_err(actix_web::error::ErrorInternalServerError)?;
