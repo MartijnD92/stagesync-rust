@@ -1,1 +1,1 @@
-DROP TABLE artist
+DROP TABLE artists

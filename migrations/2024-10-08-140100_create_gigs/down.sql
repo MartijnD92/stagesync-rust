@@ -1,1 +1,1 @@
-DROP TABLE gig
+DROP TABLE gigs

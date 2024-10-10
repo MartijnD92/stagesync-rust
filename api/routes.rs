@@ -1,5 +1,5 @@
-use super::db;
-use super::models::artist::*;
+use crate::db;
+use crate::models::artist::ArtistRequest;
 use actix_files::NamedFile;
 use actix_web::{get, post, web, Error, HttpResponse, Responder};
 use diesel::{

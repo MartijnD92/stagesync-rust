@@ -1,5 +1,5 @@
-use super::models::artist::{Artist, ArtistRequest};
-use super::models::gig::{Gig, Gigs};
+use crate::models::artist::{Artist, ArtistRequest, ArtistResponse};
+use crate::models::gig::{Gig, Gigs};
 
 use actix_web::web;
 use chrono::Utc;
@@ -9,47 +9,62 @@ use uuid::Uuid;
 type DbError = Box<dyn std::error::Error + Send + Sync>;
 
 pub fn insert_new_artist(
-    conn: &mut PgConnection,
+    connection: &mut PgConnection,
     data: web::Json<ArtistRequest>,
 ) -> Result<Artist, DbError> {
-    use super::schema::artist::dsl::*;
+    use super::schema::artists::dsl::*;
 
     let new_artist = Artist {
         id: Uuid::new_v4(),
-        name: data.name,
+        name: data.name.clone(),
         description: data.description.clone(),
-        fee: data.fee,
-        currency: data.currency,
+        fee: data.fee.clone(),
+        currency: data.currency.clone(),
         image: data.image.clone(),
         genre: data.genre.clone(),
-        location: data.location,
+        location: data.location.clone(),
         created_at: Utc::now().naive_utc(),
         updated_at: Utc::now().naive_utc(),
     };
 
-    diesel::insert_into(artist)
+    diesel::insert_into(artists)
         .values(&new_artist)
-        .execute(conn)?;
+        .execute(connection)?;
 
     Ok(new_artist)
 }
 
-pub fn find_artist_by_uuid(conn: &mut PgConnection, uuid: Uuid) -> Result<Option<Artist>, DbError> {
-    use super::schema::artist::dsl::{artist, id};
+pub fn find_artist_by_uuid(
+    connection: &mut PgConnection,
+    uuid: Uuid,
+) -> Result<Option<ArtistResponse>, DbError> {
+    use super::schema::artists::dsl::{artists, id};
+    use super::schema::gigs::dsl::{artist_id, gigs};
 
-    let _artist = artist
+    let artist = artists
         .filter(id.eq(uuid))
-        .first::<Artist>(conn)
+        .first::<Artist>(connection)
         .optional()?;
 
-    let gigs = Gig::belonging_to(&_artist).select(Gig::as_select());
+    if let Some(artist) = artist {
+        let artist_gigs = gigs
+            .filter(artist_id.eq(artist.id))
+            .load::<Gig>(connection)?;
 
-    Ok(_artist)
+        let response = ArtistResponse {
+            artist,
+            gigs: Gigs(artist_gigs),
+        };
+
+        Ok(Some(response))
+    } else {
+        Ok(None) // No artist found with the given UUID
+    }
 }
 
-pub fn get_all_gigs(conn: &mut PgConnection) -> Result<Gigs, DbError> {
-    use super::schema::gig;
+pub fn get_all_gigs(connection: &mut PgConnection) -> Result<Gigs, DbError> {
+    use super::schema::gigs;
 
-    let gigs_data: Vec<Gig> = gig::table.get_results(conn)?;
+    let gigs_data: Vec<Gig> = gigs::table.get_results(connection)?;
     Ok(Gigs(gigs_data))
 }

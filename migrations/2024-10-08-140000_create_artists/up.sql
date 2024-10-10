@@ -1,9 +1,9 @@
-CREATE TABLE IF NOT EXISTS artist (
+CREATE TABLE IF NOT EXISTS artists (
     id    UUID PRIMARY KEY NOT NULL,
     name VARCHAR NOT NULL,
     description TEXT,
     image VARCHAR,
-    fee DECIMAL NOT NULL,
+    fee INTEGER NOT NULL,
     currency VARCHAR NOT NULL,
     genre VARCHAR,
     location TEXT,
