@@ -16,6 +16,17 @@ pub fn get_all_users(connection: &mut PgConnection) -> Result<Vec<User>, DbError
     Ok(data)
 }
 
+pub fn get_user_by_id(connection: &mut PgConnection, uuid: Uuid) -> Result<Option<User>, DbError> {
+    use super::schema::users::dsl::{id, users};
+
+    let user = users
+        .filter(id.eq(uuid))
+        .first::<User>(connection)
+        .optional()?;
+
+    Ok(user)
+}
+
 pub fn insert_new_user(
     connection: &mut PgConnection,
     data: web::Json<UserRequest>,

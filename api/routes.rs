@@ -16,6 +16,33 @@ pub async fn index() -> impl Responder {
     NamedFile::open_async("./static/index.html").await.unwrap()
 }
 
+#[get("/users/{id}")]
+pub async fn get_user_by_id(
+    pool: web::Data<DbPool>,
+    id: web::Path<Uuid>,
+) -> Result<HttpResponse, Error> {
+    let user_id = id.to_owned();
+    let user = web::block(move || {
+        let mut conn = pool.get()?;
+        db::get_user_by_id(&mut conn, user_id)
+    })
+    .await?
+    .map_err(actix_web::error::ErrorInternalServerError)?;
+
+    if let Some(user) = user {
+        Ok(HttpResponse::Ok().json(user))
+    } else {
+        let res = HttpResponse::NotFound().body(
+            json!({
+                "error": 404,
+                "message": format!("No user found with id: {id}")
+            })
+            .to_string(),
+        );
+        Ok(res)
+    }
+}
+
 #[get("/users")]
 pub async fn get_users(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
     let users = web::block(move || {
@@ -54,7 +81,7 @@ pub async fn create_artist(
     Ok(HttpResponse::Ok().json(artist))
 }
 
-#[get("/artists/{artist_id}")]
+#[get("/artists/{id}")]
 pub async fn get_artist_by_id(
     pool: web::Data<DbPool>,
     id: web::Path<Uuid>,
@@ -104,7 +131,7 @@ pub async fn get_gigs(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
     }
 }
 
-#[get("/gigs/{gig_id}")]
+#[get("/gigs/{id}")]
 async fn get_gig_by_id(
     pool: web::Data<DbPool>,
     id: web::Path<Uuid>,
