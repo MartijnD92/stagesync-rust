@@ -1,5 +1,6 @@
-use crate::models::artist::{Artist, ArtistRequest, ArtistResponse};
-use crate::models::gig::{Gig, Gigs};
+use crate::models::artist::{Artist, ArtistRequest, ArtistResponse, NewArtist};
+use crate::models::gig::{Gig, GigRequest, Gigs};
+use crate::models::user::{NewUser, User, UserRequest};
 
 use actix_web::web;
 use chrono::Utc;
@@ -8,33 +9,62 @@ use uuid::Uuid;
 
 type DbError = Box<dyn std::error::Error + Send + Sync>;
 
+pub fn get_all_users(connection: &mut PgConnection) -> Result<Vec<User>, DbError> {
+    use super::schema::users::dsl::users;
+
+    let data = users.load::<User>(connection)?;
+    Ok(data)
+}
+
+pub fn insert_new_user(
+    connection: &mut PgConnection,
+    data: web::Json<UserRequest>,
+) -> Result<User, DbError> {
+    use super::schema::users::dsl::*;
+
+    let new_user = NewUser {
+        id: Uuid::new_v4(),
+        first_name: &data.first_name,
+        last_name: &data.last_name,
+        email: &data.email,
+        created_at: Utc::now().naive_utc(),
+        updated_at: Utc::now().naive_utc(),
+    };
+
+    let user = diesel::insert_into(users)
+        .values(&new_user)
+        .get_result(connection)?;
+
+    Ok(user)
+}
+
 pub fn insert_new_artist(
     connection: &mut PgConnection,
     data: web::Json<ArtistRequest>,
 ) -> Result<Artist, DbError> {
     use super::schema::artists::dsl::*;
 
-    let new_artist = Artist {
+    let new_artist = NewArtist {
         id: Uuid::new_v4(),
-        name: data.name.clone(),
-        description: data.description.clone(),
+        name: &data.name,
+        description: data.description.as_deref(),
         fee: data.fee,
-        currency: data.currency.clone(),
-        image: data.image.clone(),
-        genre: data.genre.clone(),
-        location: data.location.clone(),
+        currency: &data.currency,
+        image: data.image.as_deref(),
+        genre: data.genre.as_deref(),
+        location: data.location.as_deref(),
         created_at: Utc::now().naive_utc(),
         updated_at: Utc::now().naive_utc(),
     };
 
-    diesel::insert_into(artists)
+    let artist = diesel::insert_into(artists)
         .values(&new_artist)
-        .execute(connection)?;
+        .get_result(connection)?;
 
-    Ok(new_artist)
+    Ok(artist)
 }
 
-pub fn find_artist_by_uuid(
+pub fn get_artist_by_id(
     connection: &mut PgConnection,
     uuid: Uuid,
 ) -> Result<Option<ArtistResponse>, DbError> {
@@ -62,9 +92,43 @@ pub fn find_artist_by_uuid(
     }
 }
 
-pub fn find_all_gigs(connection: &mut PgConnection) -> Result<Gigs, DbError> {
-    use super::schema::gigs;
+pub fn get_all_gigs(connection: &mut PgConnection) -> Result<Gigs, DbError> {
+    use super::schema::gigs::dsl::gigs;
 
-    let gigs_data: Vec<Gig> = gigs::table.get_results(connection)?;
-    Ok(Gigs(gigs_data))
+    let data: Vec<Gig> = gigs.load::<Gig>(connection)?;
+    Ok(Gigs(data))
+}
+
+pub fn get_gig_by_id(connection: &mut PgConnection, uuid: Uuid) -> Result<Option<Gig>, DbError> {
+    use super::schema::gigs::dsl::{gigs, id};
+
+    let gig = gigs
+        .filter(id.eq(uuid))
+        .first::<Gig>(connection)
+        .optional()?;
+
+    Ok(gig)
+}
+
+pub fn insert_new_gig(
+    connection: &mut PgConnection,
+    data: web::Json<GigRequest>,
+) -> Result<Gig, DbError> {
+    use super::schema::gigs::dsl::*;
+
+    let new_gig = Gig {
+        id: Uuid::new_v4(),
+        title: data.title.clone(),
+        location: data.location.clone(),
+        date: data.date.clone(),
+        artist_id: data.artist_id.clone(),
+        created_at: Utc::now().naive_utc(),
+        updated_at: Utc::now().naive_utc(),
+    };
+
+    diesel::insert_into(gigs)
+        .values(&new_gig)
+        .execute(connection)?;
+
+    Ok(new_gig)
 }

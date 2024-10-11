@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS artists (
-    id    UUID PRIMARY KEY NOT NULL,
+    id UUID PRIMARY KEY NOT NULL,
     name VARCHAR NOT NULL,
     description TEXT,
     image VARCHAR,
@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS artists (
     currency VARCHAR NOT NULL,
     genre VARCHAR,
     location TEXT,
+    user_id UUID NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 )

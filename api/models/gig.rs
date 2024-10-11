@@ -1,4 +1,3 @@
-use crate::models::artist::Artist;
 use crate::schema::gigs;
 use chrono::{DateTime, Local};
 use diesel::prelude::*;
@@ -8,9 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::ops::Deref;
 
-#[derive(Identifiable, Queryable, Associations, Serialize, Deserialize, PartialEq, Debug)]
-#[diesel(belongs_to(Artist))]
-#[diesel(check_for_backend(diesel::pg::Pg))]
+#[derive(Identifiable, Insertable, Queryable, Serialize, Deserialize, Debug)]
 pub struct Gig {
     pub id: uuid::Uuid,
     pub title: String,
@@ -19,6 +16,14 @@ pub struct Gig {
     pub artist_id: uuid::Uuid,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct GigRequest {
+    pub title: String,
+    pub location: String,
+    pub date: chrono::NaiveDateTime,
+    pub artist_id: uuid::Uuid,
 }
 
 impl fmt::Display for Gig {

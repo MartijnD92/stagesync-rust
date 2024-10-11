@@ -1,5 +1,6 @@
 use crate::db;
 use crate::models::artist::ArtistRequest;
+use crate::models::gig::GigRequest;
 use actix_files::NamedFile;
 use actix_web::{get, post, web, Error, HttpResponse, Responder};
 use diesel::{
@@ -15,7 +16,30 @@ pub async fn index() -> impl Responder {
     NamedFile::open_async("./static/index.html").await.unwrap()
 }
 
-#[post("/artists/create")]
+#[get("/users")]
+pub async fn get_users(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
+    let users = web::block(move || {
+        let mut conn = pool.get()?;
+        db::get_all_users(&mut conn)
+    })
+    .await?
+    .map_err(actix_web::error::ErrorInternalServerError)?;
+
+    if !users.is_empty() {
+        Ok(HttpResponse::Ok().json(users))
+    } else {
+        let res = HttpResponse::NotFound().body(
+            json!({
+                "error": 404,
+                "message": "No users were found.",
+            })
+            .to_string(),
+        );
+        Ok(res)
+    }
+}
+
+#[post("/artists")]
 pub async fn create_artist(
     pool: web::Data<DbPool>,
     form: web::Json<ArtistRequest>,
@@ -38,7 +62,7 @@ pub async fn get_artist_by_id(
     let artist_id = id.to_owned();
     let artist = web::block(move || {
         let mut conn = pool.get()?;
-        db::find_artist_by_uuid(&mut conn, artist_id)
+        db::get_artist_by_id(&mut conn, artist_id)
     })
     .await?
     .map_err(actix_web::error::ErrorInternalServerError)?;
@@ -61,7 +85,7 @@ pub async fn get_artist_by_id(
 pub async fn get_gigs(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
     let gigs = web::block(move || {
         let mut conn = pool.get()?;
-        db::find_all_gigs(&mut conn)
+        db::get_all_gigs(&mut conn)
     })
     .await?
     .map_err(actix_web::error::ErrorInternalServerError)?;
@@ -72,10 +96,52 @@ pub async fn get_gigs(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
         let res = HttpResponse::NotFound().body(
             json!({
                 "error": 404,
-                "message": "No gigs found.",
+                "message": "No gigs were found.",
             })
             .to_string(),
         );
         Ok(res)
     }
+}
+
+#[get("/gigs/{gig_id}")]
+async fn get_gig_by_id(
+    pool: web::Data<DbPool>,
+    id: web::Path<Uuid>,
+) -> Result<HttpResponse, Error> {
+    let gig_id = id.to_owned();
+    let gig = web::block(move || {
+        let mut conn = pool.get()?;
+        db::get_gig_by_id(&mut conn, gig_id)
+    })
+    .await?
+    .map_err(actix_web::error::ErrorInternalServerError)?;
+
+    if let Some(gig) = gig {
+        Ok(HttpResponse::Ok().json(gig))
+    } else {
+        let res = HttpResponse::NotFound().body(
+            json!({
+                "error": 404,
+                "message": format!("No gig found with id: {id}")
+            })
+            .to_string(),
+        );
+        Ok(res)
+    }
+}
+
+#[post("/gigs")]
+pub async fn create_gig(
+    pool: web::Data<DbPool>,
+    form: web::Json<GigRequest>,
+) -> Result<HttpResponse, Error> {
+    let gig = web::block(move || {
+        let mut conn = pool.get()?;
+        db::insert_new_gig(&mut conn, form)
+    })
+    .await?
+    .map_err(actix_web::error::ErrorUnprocessableEntity)?;
+
+    Ok(HttpResponse::Ok().json(gig))
 }
