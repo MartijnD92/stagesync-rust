@@ -51,9 +51,12 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .service(
                 web::scope("/api/v1")
-                    .service(routes::create_artist)
+                    .service(routes::get_users)
                     .service(routes::get_artist_by_id)
+                    .service(routes::create_artist)
                     .service(routes::get_gigs)
+                    .service(routes::get_gig_by_id)
+                    .service(routes::create_gig)
                     .service(web::resource("/").to(routes::index))
                     .service(Files::new("/", "./static")),
             )
