@@ -1,8 +1,9 @@
 use crate::db;
 use crate::models::artist::ArtistRequest;
 use crate::models::gig::GigRequest;
+use crate::models::user::UserRequest;
 use actix_files::NamedFile;
-use actix_web::{get, post, web, Error, HttpResponse, Responder};
+use actix_web::{delete, get, post, put, web, Error, HttpResponse, Responder};
 use diesel::{
     prelude::*,
     r2d2::{self, ConnectionManager},
@@ -35,7 +36,7 @@ pub async fn get_user_by_id(
         let res = HttpResponse::NotFound().body(
             json!({
                 "error": 404,
-                "message": format!("No user found with id: {id}")
+                "message": format!("No user found with id '{id}'")
             })
             .to_string(),
         );
@@ -66,19 +67,67 @@ pub async fn get_users(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
     }
 }
 
-#[post("/artists")]
-pub async fn create_artist(
+#[post("/users")]
+pub async fn add_user(
     pool: web::Data<DbPool>,
-    form: web::Json<ArtistRequest>,
+    form: web::Json<UserRequest>,
 ) -> Result<HttpResponse, Error> {
-    let artist = web::block(move || {
+    let user = web::block(move || {
         let mut conn = pool.get()?;
-        db::insert_new_artist(&mut conn, form)
+        db::insert_new_user(&mut conn, form)
     })
     .await?
     .map_err(actix_web::error::ErrorUnprocessableEntity)?;
 
-    Ok(HttpResponse::Ok().json(artist))
+    Ok(HttpResponse::Created().json(user))
+}
+
+#[delete("/users/{id}")]
+async fn delete_user(pool: web::Data<DbPool>, id: web::Path<Uuid>) -> Result<HttpResponse, Error> {
+    let user_id = id.to_owned();
+    let delete_count = web::block(move || {
+        let mut conn = pool.get()?;
+        db::delete_user_by_id(&mut conn, user_id)
+    })
+    .await?
+    .map_err(actix_web::error::ErrorInternalServerError)?;
+    dbg!(delete_count);
+
+    if delete_count > 0 {
+        Ok(HttpResponse::Ok().json(delete_count))
+    } else {
+        let res = HttpResponse::NotFound().body(
+            json!({
+                "error": 404,
+                "message": format!("Failed to delete user with id '{id}'. No user found.")
+            })
+            .to_string(),
+        );
+        Ok(res)
+    }
+}
+
+#[get("/artists")]
+pub async fn get_artists(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
+    let artists = web::block(move || {
+        let mut conn = pool.get()?;
+        db::get_all_artists(&mut conn)
+    })
+    .await?
+    .map_err(actix_web::error::ErrorInternalServerError)?;
+
+    if !artists.is_empty() {
+        Ok(HttpResponse::Ok().json(artists))
+    } else {
+        let res = HttpResponse::NotFound().body(
+            json!({
+                "error": 404,
+                "message": "No users were found.",
+            })
+            .to_string(),
+        );
+        Ok(res)
+    }
 }
 
 #[get("/artists/{id}")]
@@ -100,12 +149,27 @@ pub async fn get_artist_by_id(
         let res = HttpResponse::NotFound().body(
             json!({
                 "error": 404,
-                "message": format!("No artist found with id: {id}")
+                "message": format!("No artist found with id '{id}'")
             })
             .to_string(),
         );
         Ok(res)
     }
+}
+
+#[post("/artists")]
+pub async fn add_artist(
+    pool: web::Data<DbPool>,
+    form: web::Json<ArtistRequest>,
+) -> Result<HttpResponse, Error> {
+    let artist = web::block(move || {
+        let mut conn = pool.get()?;
+        db::insert_new_artist(&mut conn, form)
+    })
+    .await?
+    .map_err(actix_web::error::ErrorUnprocessableEntity)?;
+
+    Ok(HttpResponse::Created().json(artist))
 }
 
 #[get("/gigs")]
@@ -150,7 +214,7 @@ async fn get_gig_by_id(
         let res = HttpResponse::NotFound().body(
             json!({
                 "error": 404,
-                "message": format!("No gig found with id: {id}")
+                "message": format!("No gig found with id '{id}'")
             })
             .to_string(),
         );

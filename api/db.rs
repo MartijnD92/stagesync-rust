@@ -9,24 +9,6 @@ use uuid::Uuid;
 
 type DbError = Box<dyn std::error::Error + Send + Sync>;
 
-pub fn get_all_users(connection: &mut PgConnection) -> Result<Vec<User>, DbError> {
-    use super::schema::users::dsl::users;
-
-    let data = users.load::<User>(connection)?;
-    Ok(data)
-}
-
-pub fn get_user_by_id(connection: &mut PgConnection, uuid: Uuid) -> Result<Option<User>, DbError> {
-    use super::schema::users::dsl::{id, users};
-
-    let user = users
-        .filter(id.eq(uuid))
-        .first::<User>(connection)
-        .optional()?;
-
-    Ok(user)
-}
-
 pub fn insert_new_user(
     connection: &mut PgConnection,
     data: web::Json<UserRequest>,
@@ -47,6 +29,32 @@ pub fn insert_new_user(
         .get_result(connection)?;
 
     Ok(user)
+}
+
+pub fn get_all_users(connection: &mut PgConnection) -> Result<Vec<User>, DbError> {
+    use super::schema::users::dsl::users;
+
+    let data = users.load::<User>(connection)?;
+    Ok(data)
+}
+
+pub fn get_user_by_id(connection: &mut PgConnection, uuid: Uuid) -> Result<Option<User>, DbError> {
+    use super::schema::users::dsl::{id, users};
+
+    let user = users
+        .filter(id.eq(uuid))
+        .first::<User>(connection)
+        .optional()?;
+
+    Ok(user)
+}
+
+pub fn delete_user_by_id(connection: &mut PgConnection, uuid: Uuid) -> Result<usize, DbError> {
+    use super::schema::users::dsl::{id, users};
+
+    let count = diesel::delete(users.filter(id.eq(uuid))).execute(connection)?;
+
+    Ok(count)
 }
 
 pub fn insert_new_artist(
@@ -73,6 +81,23 @@ pub fn insert_new_artist(
         .get_result(connection)?;
 
     Ok(artist)
+}
+
+pub fn get_all_artists(connection: &mut PgConnection) -> Result<Vec<ArtistResponse>, DbError> {
+    use super::schema::artists::dsl::artists;
+    use super::schema::gigs::dsl::{artist_id, gigs};
+
+    let mut res = Vec::new();
+    let data = artists.load::<Artist>(connection)?;
+    for a in Some(data).iter().flatten() {
+        let artist_gigs = gigs.filter(artist_id.eq(a.id)).load::<Gig>(connection)?;
+
+        res.push(ArtistResponse {
+            artist: a.clone(),
+            gigs: Gigs(artist_gigs),
+        });
+    }
+    Ok(res)
 }
 
 pub fn get_artist_by_id(
@@ -131,8 +156,8 @@ pub fn insert_new_gig(
         id: Uuid::new_v4(),
         title: data.title.clone(),
         location: data.location.clone(),
-        date: data.date.clone(),
-        artist_id: data.artist_id.clone(),
+        date: data.date,
+        artist_id: data.artist_id,
         created_at: Utc::now().naive_utc(),
         updated_at: Utc::now().naive_utc(),
     };
