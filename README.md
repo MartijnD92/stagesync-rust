@@ -9,4 +9,7 @@
 This project aims to simplify the day-to-day tasks of booking agents, ensuring they have a clear overview of upcoming events, artist details, and financials, all within a user-friendly interface.
 
 ## Roadmap
-[ ] Add, modify and delete 
+[x] Add, modify and delete users, artists and gigs through API endpoints
+[ ] User authentication
+[ ] Multi-user roles for agents and artists
+[ ] Dashboard UI
