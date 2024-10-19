@@ -1,6 +1,7 @@
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{http, middleware::Logger, web, App, HttpServer};
+use actix_web_httpauth::middleware::HttpAuthentication;
 use diesel::{
     prelude::*,
     r2d2::{self, ConnectionManager},
@@ -13,6 +14,7 @@ mod errors;
 mod models;
 mod routes;
 mod schema;
+mod services;
 
 #[allow(dead_code)]
 struct AppState {
@@ -37,6 +39,7 @@ async fn main() -> std::io::Result<()> {
     let server_port = 8080;
 
     let app = HttpServer::new(move || {
+        let auth = HttpAuthentication::bearer(services::auth::validator);
         let cors = Cors::default()
             .allowed_origin("http://localhost:3000")
             .allowed_origin("http://localhost:8080")
@@ -46,6 +49,7 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600);
 
         App::new()
+            .wrap(auth)
             .app_data(web::Data::new(pool.clone()))
             .wrap(cors)
             .wrap(Logger::default())
