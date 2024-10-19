@@ -24,9 +24,9 @@ struct AppState {
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("'DATABASE_URL' must be set");
-    env::set_var("RUST_LOG", "info");
-    env::set_var("RUST_BACKTRACE", "1");
-    env_logger::init();
+    // env::set_var("RUST_LOG", "info");
+    // env::set_var("RUST_BACKTRACE", "1");
+    // env_logger::init();
 
     let manager = ConnectionManager::<PgConnection>::new(database_url);
     let pool = r2d2::Pool::builder()
@@ -53,15 +53,19 @@ async fn main() -> std::io::Result<()> {
                 web::scope("/api/v1")
                     // Users
                     .service(routes::get_users)
+                    .service(routes::get_user_by_id)
                     .service(routes::add_user)
+                    .service(routes::delete_user)
                     // Artists
                     .service(routes::get_artists)
                     .service(routes::get_artist_by_id)
                     .service(routes::add_artist)
+                    .service(routes::delete_artist)
                     // Gigs
                     .service(routes::get_gigs)
                     .service(routes::get_gig_by_id)
-                    .service(routes::create_gig),
+                    .service(routes::create_gig)
+                    .service(routes::delete_gig),
             )
             .service(web::resource("/").to(routes::index))
             .service(Files::new("/", "./static"))

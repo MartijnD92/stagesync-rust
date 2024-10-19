@@ -128,6 +128,14 @@ pub fn get_artist_by_id(
     }
 }
 
+pub fn delete_artist_by_id(connection: &mut PgConnection, uuid: Uuid) -> Result<usize, DbError> {
+    use super::schema::artists::dsl::{id, artists};
+
+    let count = diesel::delete(artists.filter(id.eq(uuid))).execute(connection)?;
+
+    Ok(count)
+}
+
 pub fn get_all_gigs(connection: &mut PgConnection) -> Result<Gigs, DbError> {
     use super::schema::gigs::dsl::gigs;
 
@@ -167,4 +175,12 @@ pub fn insert_new_gig(
         .execute(connection)?;
 
     Ok(new_gig)
+}
+
+pub fn delete_gig_by_id(connection: &mut PgConnection, uuid: Uuid) -> Result<usize, DbError> {
+    use super::schema::gigs::dsl::{id, gigs};
+
+    let count = diesel::delete(gigs.filter(id.eq(uuid))).execute(connection)?;
+
+    Ok(count)
 }

@@ -1,4 +1,5 @@
 use crate::db;
+use crate::errors::ServiceError;
 use crate::models::artist::ArtistRequest;
 use crate::models::gig::GigRequest;
 use crate::models::user::UserRequest;
@@ -91,10 +92,9 @@ async fn delete_user(pool: web::Data<DbPool>, id: web::Path<Uuid>) -> Result<Htt
     })
     .await?
     .map_err(actix_web::error::ErrorInternalServerError)?;
-    dbg!(delete_count);
 
     if delete_count > 0 {
-        Ok(HttpResponse::Ok().json(delete_count))
+        Ok(HttpResponse::NoContent().body(""))
     } else {
         let res = HttpResponse::NotFound().body(
             json!({
@@ -172,6 +172,30 @@ pub async fn add_artist(
     Ok(HttpResponse::Created().json(artist))
 }
 
+#[delete("/artists/{id}")]
+async fn delete_artist(pool: web::Data<DbPool>, id: web::Path<Uuid>) -> Result<HttpResponse, Error> {
+    let artist_id = id.to_owned();
+    let delete_count = web::block(move || {
+        let mut conn = pool.get()?;
+        db::delete_artist_by_id(&mut conn, artist_id)
+    })
+    .await?
+    .map_err(actix_web::error::ErrorInternalServerError)?;
+
+    if delete_count > 0 {
+        Ok(HttpResponse::NoContent().body(""))
+    } else {
+        let res = HttpResponse::NotFound().body(
+            json!({
+                "error": 404,
+                "message": format!("Failed to delete artist with id '{id}'. No artist found.")
+            })
+            .to_string(),
+        );
+        Ok(res)
+    }
+}
+
 #[get("/gigs")]
 pub async fn get_gigs(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
     let gigs = web::block(move || {
@@ -235,4 +259,28 @@ pub async fn create_gig(
     .map_err(actix_web::error::ErrorUnprocessableEntity)?;
 
     Ok(HttpResponse::Ok().json(gig))
+}
+
+#[delete("/gigs/{id}")]
+async fn delete_gig(pool: web::Data<DbPool>, id: web::Path<Uuid>) -> Result<HttpResponse, Error> {
+    let gig_id = id.to_owned();
+    let delete_count = web::block(move || {
+        let mut conn = pool.get()?;
+        db::delete_gig_by_id(&mut conn, gig_id)
+    })
+    .await?
+    .map_err(actix_web::error::ErrorInternalServerError)?;
+
+    if delete_count > 0 {
+        Ok(HttpResponse::NoContent().body(""))
+    } else {
+        let res = HttpResponse::NotFound().body(
+            json!({
+                "error": 404,
+                "message": format!("Failed to delete gig with id '{id}'. No gig found.")
+            })
+            .to_string(),
+        );
+        Ok(res)
+    }
 }
