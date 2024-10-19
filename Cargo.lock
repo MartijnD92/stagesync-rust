@@ -1575,6 +1575,7 @@ dependencies = [
  "env_logger",
  "futures",
  "itertools",
+ "log",
  "serde",
  "serde_json",
  "thiserror",

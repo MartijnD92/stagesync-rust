@@ -14,7 +14,7 @@ pub struct User {
 }
 
 #[derive(Insertable, Debug)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct NewUser<'a> {
     pub id: uuid::Uuid,
     pub first_name: &'a str,

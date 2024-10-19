@@ -3,13 +3,13 @@ use derive_more::Display;
 
 #[derive(Debug, Display)]
 pub enum ServiceError {
-    #[display(fmt = "Internal Server Error")]
+    #[display("Internal Server Error")]
     InternalServerError,
 
-    #[display(fmt = "BadRequest: {}", _0)]
+    #[display("BadRequest: {}", _0)]
     BadRequest(String),
 
-    #[display(fmt = "JWKSFetchError")]
+    #[display("JWKSFetchError")]
     JWKSFetchError,
 }
 
@@ -25,5 +25,12 @@ impl ResponseError for ServiceError {
                 HttpResponse::InternalServerError().json("Could not fetch JWKS")
             }
         }
+    }
+}
+
+impl From<actix_web::error::BlockingError> for ServiceError {
+    fn from(error: actix_web::error::BlockingError) -> ServiceError {
+        log::error!("actix threadpool pool error: {}", error);
+        ServiceError::InternalServerError
     }
 }
