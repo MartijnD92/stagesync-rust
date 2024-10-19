@@ -11,8 +11,9 @@ This project aims to simplify the day-to-day tasks of booking agents, ensuring t
 
 ## Prerequisites
 Make sure you have the following dependencies installed on your machine:
-- Rust 1.78 or later (including `cargo`)
-- `diesel_cli` (`cargo install diesel_cli` should do the trick)
+- Rust 1.78 or later (including `cargo`) and make sure it's in your system's PATH environment variable.
+- PostgreSQL
+- `diesel_cli` (`cargo install diesel_cli --no-default-features --features postgres` should do the trick)
 
 ## Getting started
 1. Clone the project and create a `.env` file inside the root directory, containing the URL to a PostgreSQL database (replace with your own credentials):
