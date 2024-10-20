@@ -33,7 +33,7 @@ struct Claims {
 }
 
 async fn validate_token(token: &str) -> Result<bool, ServiceError> {
-    let authority = std::env::var("AUTHORITY").expect("AUTHORITY must be set");
+    let authority = std::env::var("AUTH0_DOMAIN").expect("AUTH0_DOMAIN must be set");
     let jwks = fetch_jwks(&format!(
         "{}{}",
         authority.as_str(),

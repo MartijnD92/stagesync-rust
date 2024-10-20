@@ -29,6 +29,7 @@ async fn main() -> std::io::Result<()> {
     let client_url = env::var("CLIENT_ORIGIN_URL").expect("'CLIENT_ORIGIN_URL' must be set");
     let server_port = env::var("PORT").expect("'PORT' must be set");
     let server_addr = "127.0.0.1";
+    let server_url = format!("{}:{}", server_addr, server_port);
     // env::set_var("RUST_LOG", "info");
     // env::set_var("RUST_BACKTRACE", "1");
     // env_logger::init();
@@ -42,7 +43,7 @@ async fn main() -> std::io::Result<()> {
         let auth = HttpAuthentication::bearer(services::auth::validator);
         let cors = Cors::default()
             .allowed_origin(&client_url)
-            .allowed_origin("http://localhost:8080")
+            .allowed_origin(&server_url)
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
             .allowed_header(http::header::CONTENT_TYPE)
