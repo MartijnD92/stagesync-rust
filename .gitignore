@@ -1,6 +1,6 @@
 /node_modules
 /ui/dist
 /.cargo/.build
-.env*
+.env
 .DS_Store
 stagesync.db
