@@ -8,6 +8,7 @@ pub struct User {
     pub first_name: String,
     pub last_name: String,
     pub email: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub image: Option<String>,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,

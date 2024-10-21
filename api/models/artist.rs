@@ -7,11 +7,15 @@ use serde::{Deserialize, Serialize};
 pub struct Artist {
     pub id: uuid::Uuid,
     pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub image: Option<String>,
     pub fee: i32,
     pub currency: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub genre: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub location: Option<String>,
     pub user_id: uuid::Uuid,
     pub created_at: chrono::NaiveDateTime,
@@ -36,11 +40,15 @@ pub struct NewArtist<'a> {
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ArtistRequest {
     pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub image: Option<String>,
     pub fee: i32,
     pub currency: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub genre: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub location: Option<String>,
 }
 

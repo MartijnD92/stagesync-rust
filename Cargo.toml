@@ -1,3 +1,8 @@
+[package]
+edition = "2021"
+name = "stagesync"
+version = "0.1.0"
+
 [[bin]]
 name = "main"
 path = "api/main.rs"
@@ -5,10 +10,10 @@ path = "api/main.rs"
 [dependencies]
 actix-cors = "0.7.0"
 actix-files = "0.6.6"
-actix-web = "4.9.0"
+actix-web = { version = "4.9.0" }
 actix-web-httpauth = "0.8.2"
-alcoholic_jwt = "4091.0.0"
 anyhow = "1.0.89"
+awc = { version = "3.5.1", features = ["openssl"] }
 chrono = { version = "0.4.38", features = ["serde"] }
 derive_more = { version = "1.0.0", features = ["display", "error"] }
 diesel = { version = "2.2.0", features = [
@@ -18,26 +23,15 @@ diesel = { version = "2.2.0", features = [
   "r2d2",
   "uuid",
 ] }
-# build libpq and openssl as part of the build process
-# uncomment these lines if you run into setup issues
-# pq-sys = { version = "0.6", features = ["bundled"] }
-# openssl-sys = { version = "0.9.100", features = ["vendored"] }
 dotenvy = "0.15"
 env_logger = "0.11.5"
+envy = "0.4.2"
 futures = "0.3.31"
 itertools = "0.13.0"
+jsonwebtoken = "9.3.0"
 log = "0.4.22"
 reqwest = { version = "0.12.8", features = ["json"] }
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
 thiserror = "1.0.64"
 uuid = { version = "1.10.0", features = ["v4", "serde"] }
-
-[package]
-edition = "2021"
-name = "stagesync"
-publish = false
-version = "0.1.0"
-
-[profile.dev]
-debug-assertions = true
