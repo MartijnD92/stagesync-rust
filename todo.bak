@@ -1,0 +1,2 @@
+* ServiceError → ClientError
+* Errors in claims.rs → ClientError
