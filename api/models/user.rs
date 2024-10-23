@@ -30,6 +30,4 @@ pub struct UserRequest {
     pub first_name: String,
     pub last_name: String,
     pub email: String,
-    pub created_at: chrono::NaiveDateTime,
-    pub updated_at: chrono::NaiveDateTime,
 }

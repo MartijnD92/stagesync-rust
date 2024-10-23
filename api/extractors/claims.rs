@@ -30,10 +30,15 @@ pub struct Claims {
 }
 
 impl Claims {
-    pub fn validate_permissions(&self, required_permissions: &HashSet<String>) -> bool {
-        self.permissions.as_ref().map_or(false, |permissions| {
-            permissions.is_superset(required_permissions)
-        })
+    pub fn validate_permissions(
+        &self,
+        required_permissions: &HashSet<String>,
+    ) -> Result<bool, ServiceError> {
+        self.permissions
+            .as_ref()
+            .map_or(Err(ServiceError::Unauthorized), |permissions| {
+                Ok(permissions.is_superset(required_permissions))
+            })
     }
 }
 

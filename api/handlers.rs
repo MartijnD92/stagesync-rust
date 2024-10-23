@@ -26,34 +26,37 @@ pub async fn get_user_by_id(
     pool: web::Data<DbPool>,
     id: web::Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
-    if claims.validate_permissions(&HashSet::from(["read:users".to_string()])) {
-        let user_id = id.to_owned();
-        let user = web::block(move || {
-            let mut conn = pool.get()?;
-            db::get_user_by_id(&mut conn, user_id)
-        })
-        .await?
-        .map_err(|_| ServiceError::InternalServerError)?;
+    claims.validate_permissions(&HashSet::from(["read:users".to_string()]))?;
 
-        if let Some(user) = user {
-            Ok(HttpResponse::Ok().json(user))
-        } else {
-            let res = HttpResponse::NotFound().body(
-                json!({
-                    "error": 404,
-                    "message": format!("No user found with id '{id}'")
-                })
-                .to_string(),
-            );
-            Ok(res)
-        }
+    let user_id = id.to_owned();
+    let user = web::block(move || {
+        let mut conn = pool.get()?;
+        db::get_user_by_id(&mut conn, user_id)
+    })
+    .await?
+    .map_err(|_| ServiceError::InternalServerError)?;
+
+    if let Some(user) = user {
+        Ok(HttpResponse::Ok().json(user))
     } else {
-        Err(ServiceError::Unauthorized)
+        let res = HttpResponse::NotFound().body(
+            json!({
+                "error": 404,
+                "message": format!("No user found with id '{id}'")
+            })
+            .to_string(),
+        );
+        Ok(res)
     }
 }
 
 #[get("/users")]
-pub async fn get_users(pool: web::Data<DbPool>) -> Result<HttpResponse, ServiceError> {
+pub async fn get_users(
+    claims: Claims,
+    pool: web::Data<DbPool>,
+) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["read:users".to_string()]))?;
+
     let users = web::block(move || {
         let mut conn = pool.get()?;
         db::get_all_users(&mut conn)
@@ -77,9 +80,12 @@ pub async fn get_users(pool: web::Data<DbPool>) -> Result<HttpResponse, ServiceE
 
 #[post("/users")]
 pub async fn add_user(
+    claims: Claims,
     pool: web::Data<DbPool>,
     form: web::Json<UserRequest>,
 ) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["write:users".to_string()]))?;
+
     let user = web::block(move || {
         let mut conn = pool.get()?;
         db::insert_new_user(&mut conn, form)
@@ -92,9 +98,12 @@ pub async fn add_user(
 
 #[delete("/users/{id}")]
 async fn delete_user(
+    claims: Claims,
     pool: web::Data<DbPool>,
     id: web::Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["delete:users".to_string()]))?;
+
     let user_id = id.to_owned();
     let delete_count = web::block(move || {
         let mut conn = pool.get()?;
@@ -118,7 +127,12 @@ async fn delete_user(
 }
 
 #[get("/artists")]
-pub async fn get_artists(pool: web::Data<DbPool>) -> Result<HttpResponse, ServiceError> {
+pub async fn get_artists(
+    claims: Claims,
+    pool: web::Data<DbPool>,
+) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["read:artists".to_string()]))?;
+
     let artists = web::block(move || {
         let mut conn = pool.get()?;
         db::get_all_artists(&mut conn)
@@ -142,9 +156,12 @@ pub async fn get_artists(pool: web::Data<DbPool>) -> Result<HttpResponse, Servic
 
 #[get("/artists/{id}")]
 pub async fn get_artist_by_id(
+    claims: Claims,
     pool: web::Data<DbPool>,
     id: web::Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["read:artists".to_string()]))?;
+
     let artist_id = id.to_owned();
     let artist = web::block(move || {
         let mut conn = pool.get()?;
@@ -169,9 +186,12 @@ pub async fn get_artist_by_id(
 
 #[post("/artists")]
 pub async fn add_artist(
+    claims: Claims,
     pool: web::Data<DbPool>,
     form: web::Json<ArtistRequest>,
 ) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["write:artists".to_string()]))?;
+
     let artist = web::block(move || {
         let mut conn = pool.get()?;
         db::insert_new_artist(&mut conn, form)
@@ -184,9 +204,12 @@ pub async fn add_artist(
 
 #[delete("/artists/{id}")]
 async fn delete_artist(
+    claims: Claims,
     pool: web::Data<DbPool>,
     id: web::Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["delete:artists".to_string()]))?;
+
     let artist_id = id.to_owned();
     let delete_count = web::block(move || {
         let mut conn = pool.get()?;
@@ -210,7 +233,12 @@ async fn delete_artist(
 }
 
 #[get("/gigs")]
-pub async fn get_gigs(pool: web::Data<DbPool>) -> Result<HttpResponse, ServiceError> {
+pub async fn get_gigs(
+    claims: Claims,
+    pool: web::Data<DbPool>,
+) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["read:gigs".to_string()]))?;
+
     let gigs = web::block(move || {
         let mut conn = pool.get()?;
         db::get_all_gigs(&mut conn)
@@ -234,9 +262,12 @@ pub async fn get_gigs(pool: web::Data<DbPool>) -> Result<HttpResponse, ServiceEr
 
 #[get("/gigs/{id}")]
 async fn get_gig_by_id(
+    claims: Claims,
     pool: web::Data<DbPool>,
     id: web::Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["read:gigs".to_string()]))?;
+
     let gig_id = id.to_owned();
     let gig = web::block(move || {
         let mut conn = pool.get()?;
@@ -261,9 +292,12 @@ async fn get_gig_by_id(
 
 #[post("/gigs")]
 pub async fn create_gig(
+    claims: Claims,
     pool: web::Data<DbPool>,
     form: web::Json<GigRequest>,
 ) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["write:gigs".to_string()]))?;
+
     let gig = web::block(move || {
         let mut conn = pool.get()?;
         db::insert_new_gig(&mut conn, form)
@@ -276,9 +310,12 @@ pub async fn create_gig(
 
 #[delete("/gigs/{id}")]
 async fn delete_gig(
+    claims: Claims,
     pool: web::Data<DbPool>,
     id: web::Path<Uuid>,
 ) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["delete:gigs".to_string()]))?;
+
     let gig_id = id.to_owned();
     let delete_count = web::block(move || {
         let mut conn = pool.get()?;

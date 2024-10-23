@@ -376,12 +376,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "anyhow"
-version = "1.0.89"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86fdf8605db99b54d3cd748a44c6d04df638eb5dafb219b135d0149bd0db01f6"
-
-[[package]]
 name = "atomic-waker"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2033,7 +2027,6 @@ dependencies = [
  "actix-files",
  "actix-web",
  "actix-web-httpauth",
- "anyhow",
  "awc",
  "chrono",
  "derive_more 1.0.0",
