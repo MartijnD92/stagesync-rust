@@ -127,12 +127,7 @@ async fn delete_user(
 }
 
 #[get("/artists")]
-pub async fn get_artists(
-    claims: Claims,
-    pool: web::Data<DbPool>,
-) -> Result<HttpResponse, ServiceError> {
-    claims.validate_permissions(&HashSet::from(["read:artists".to_string()]))?;
-
+pub async fn get_artists(pool: web::Data<DbPool>) -> Result<HttpResponse, ServiceError> {
     let artists = web::block(move || {
         let mut conn = pool.get()?;
         db::get_all_artists(&mut conn)
@@ -238,6 +233,7 @@ pub async fn get_gigs(
     pool: web::Data<DbPool>,
 ) -> Result<HttpResponse, ServiceError> {
     claims.validate_permissions(&HashSet::from(["read:gigs".to_string()]))?;
+    println!("{:?}", claims);
 
     let gigs = web::block(move || {
         let mut conn = pool.get()?;

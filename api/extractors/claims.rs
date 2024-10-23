@@ -33,12 +33,21 @@ impl Claims {
     pub fn validate_permissions(
         &self,
         required_permissions: &HashSet<String>,
-    ) -> Result<bool, ServiceError> {
-        self.permissions
-            .as_ref()
-            .map_or(Err(ServiceError::Unauthorized), |permissions| {
-                Ok(permissions.is_superset(required_permissions))
-            })
+    ) -> Result<(), ServiceError> {
+        self.permissions.as_ref().map_or(
+            Err(ServiceError::BadRequest(String::from(
+                "Unable to parse permissions",
+            ))),
+            |permissions| {
+                if permissions.is_superset(required_permissions) {
+                    Ok(())
+                } else {
+                    Err(ServiceError::Forbidden(String::from(
+                        "Insufficient permissions",
+                    )))
+                }
+            },
+        )
     }
 }
 

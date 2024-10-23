@@ -9,11 +9,11 @@ pub enum ServiceError {
     #[display("Internal Server Error")]
     InternalServerError,
 
-    #[display("BadRequest: {}", _0)]
+    #[display("Bad Request: {}", _0)]
     BadRequest(String),
 
-    #[display("Unauthorized")]
-    Unauthorized,
+    #[display("Forbidden: {}", _0)]
+    Forbidden(String),
 }
 
 // impl ResponseError trait allows to convert our errors into http responses with appropriate data
@@ -23,9 +23,7 @@ impl ResponseError for ServiceError {
             ServiceError::InternalServerError => HttpResponse::InternalServerError()
                 .json("Internal Server Error, please try again later"),
             ServiceError::BadRequest(ref message) => HttpResponse::BadRequest().json(message),
-            ServiceError::Unauthorized => {
-                HttpResponse::Unauthorized().json("Unauthorized, insufficient permissions")
-            }
+            ServiceError::Forbidden(ref message) => HttpResponse::Forbidden().json(message),
         }
     }
 }
