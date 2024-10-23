@@ -48,6 +48,6 @@ Make sure to prefix all endpoints with `/api/v1`.
 
 ## Roadmap
 - [x] Add, modify and delete users, artists and gigs through API endpoints
-- [ ] User authentication
-- [ ] Multi-user roles for agents and artists
+- [x] User authentication
+- [x] Multi-user roles for agents and artists
 - [ ] Dashboard UI
