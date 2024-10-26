@@ -10,7 +10,6 @@ import DashboardPage from './pages/DashboardPage'
 
 function App() {
     const { isLoading } = useAuth0()
-    console.log(isLoading)
 
     if (isLoading) {
         return (

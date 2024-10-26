@@ -7,7 +7,9 @@ export default defineConfig(({ mode }) => {
         server: { port: 4040 },
         define: {
             __AUTH0_DOMAIN__: JSON.stringify(env.AUTH0_DOMAIN),
-            // TODO: other variables I need
+            __AUTH0_CLIENT_ID__: JSON.stringify(env.AUTH0_CLIENT_ID),
+            __AUTH0_CALLBACK_URL__: JSON.stringify(env.AUTH0_CALLBACK_URL),
+            __AUTH0_AUDIENCE__: JSON.stringify(env.AUTH0_AUDIENCE),
         },
         plugins: [react()],
     }
