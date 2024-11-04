@@ -1,7 +1,23 @@
-import { AppError } from "./app-error";
-import { Message } from "./message";
+import { AppError } from './app-error'
+import { ArtistFormatted } from './artist'
+import { Gig } from './gig'
+import { User } from './user'
 
 export interface ApiResponse {
-  data: Message | null;
-  error: AppError | null;
+    artist: ArtistResponse
+    gig: GigResponse
+    user: UserResponse
+}
+
+export interface ArtistResponse {
+    data: ArtistFormatted[] | null
+    error: AppError | null
+}
+export interface GigResponse {
+    data: Gig[] | null
+    error: AppError | null
+}
+export interface UserResponse {
+    data: User[] | null
+    error: AppError | null
 }

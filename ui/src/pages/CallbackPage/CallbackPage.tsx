@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react'
-// import { NavBar } from "../components/navigation/desktop/nav-bar";
-// import { MobileNavBar } from "../components/navigation/mobile/mobile-nav-bar";
+// import { NavBar } from '../components/navigation/desktop/nav-bar'
+// import { MobileNavBar } from '../components/navigation/mobile/mobile-nav-bar'
 import PageLayout from '../../components/PageLayout'
 
 function CallbackPage() {
@@ -24,11 +24,11 @@ function CallbackPage() {
     }
 
     return (
-        <div className="page-layout">
-            {/* <NavBar />
-      <MobileNavBar /> */}
+        <PageLayout>
+            {/* <NavBar /> */}
+            {/* <MobileNavBar /> */}
             <div className="page-layout__content" />
-        </div>
+        </PageLayout>
     )
 }
 

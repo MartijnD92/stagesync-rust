@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage'
 import CallbackPage from './pages/CallbackPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ProfilePage from './pages/ProfilePage'
-import DashboardPage from './pages/DashboardPage'
+import ArtistOverviewPage from './pages/ArtistOverviewPage'
 
 function App() {
     const { isLoading } = useAuth0()
@@ -18,12 +18,13 @@ function App() {
             </div>
         )
     }
+
     return (
         <Routes>
             <Route path="/" element={<HomePage />} />
             <Route
-                path="/dashboard"
-                element={<AuthenticationGuard component={DashboardPage} />}
+                path="/artists"
+                element={<AuthenticationGuard component={ArtistOverviewPage} />}
             />
             <Route
                 path="/profile"

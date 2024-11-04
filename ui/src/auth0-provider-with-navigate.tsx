@@ -6,9 +6,9 @@ interface Auth0ProviderWithNavigateProps {
     children: React.ReactNode
 }
 
-export const Auth0ProviderWithNavigate = ({
+function Auth0ProviderWithNavigate({
     children,
-}: PropsWithChildren<Auth0ProviderWithNavigateProps>): JSX.Element | null => {
+}: PropsWithChildren<Auth0ProviderWithNavigateProps>): JSX.Element | null {
     const navigate = useNavigate()
 
     const domain = __AUTH0_DOMAIN__
@@ -33,8 +33,11 @@ export const Auth0ProviderWithNavigate = ({
                 redirect_uri: redirectUri,
             }}
             onRedirectCallback={onRedirectCallback}
+            cacheLocation="localstorage"
         >
             {children}
         </Auth0Provider>
     )
 }
+
+export default Auth0ProviderWithNavigate
