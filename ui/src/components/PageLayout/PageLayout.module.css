@@ -1,0 +1,21 @@
+.wrapper {
+    height: 100%;
+    display: grid;
+    gap: 2rem;
+    grid-template-areas:
+        'sidebar searchbar'
+        'sidebar maincontent'
+        'sidebar footer';
+}
+
+.sidebar {
+    grid-area: sidebar;
+}
+
+.searchbar {
+    grid-area: searchbar;
+}
+
+.content {
+    grid-area: maincontent;
+}

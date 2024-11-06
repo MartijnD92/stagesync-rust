@@ -4,8 +4,7 @@ use crate::extractors::Claims;
 use crate::models::artist::ArtistRequest;
 use crate::models::gig::GigRequest;
 use crate::models::user::UserRequest;
-use actix_files::NamedFile;
-use actix_web::{delete, get, post, web, HttpResponse, Responder};
+use actix_web::{delete, get, post, web, HttpResponse};
 use diesel::{
     prelude::*,
     r2d2::{self, ConnectionManager},
@@ -15,10 +14,6 @@ use std::collections::HashSet;
 use uuid::Uuid;
 
 type DbPool = r2d2::Pool<ConnectionManager<PgConnection>>;
-
-pub async fn index() -> impl Responder {
-    NamedFile::open_async("./static/index.html").await.unwrap()
-}
 
 #[get("/users/{id}")]
 pub async fn get_user_by_id(
@@ -84,7 +79,7 @@ pub async fn add_user(
     pool: web::Data<DbPool>,
     form: web::Json<UserRequest>,
 ) -> Result<HttpResponse, ServiceError> {
-    claims.validate_permissions(&HashSet::from(["write:users".to_string()]))?;
+    claims.validate_permissions(&HashSet::from(["update:users".to_string()]))?;
 
     let user = web::block(move || {
         let mut conn = pool.get()?;
@@ -127,7 +122,11 @@ async fn delete_user(
 }
 
 #[get("/artists")]
-pub async fn get_artists(pool: web::Data<DbPool>) -> Result<HttpResponse, ServiceError> {
+pub async fn get_artists(
+    claims: Claims,
+    pool: web::Data<DbPool>,
+) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["read:artists".to_string()]))?;
     let artists = web::block(move || {
         let mut conn = pool.get()?;
         db::get_all_artists(&mut conn)
@@ -185,7 +184,7 @@ pub async fn add_artist(
     pool: web::Data<DbPool>,
     form: web::Json<ArtistRequest>,
 ) -> Result<HttpResponse, ServiceError> {
-    claims.validate_permissions(&HashSet::from(["write:artists".to_string()]))?;
+    claims.validate_permissions(&HashSet::from(["update:artists".to_string()]))?;
 
     let artist = web::block(move || {
         let mut conn = pool.get()?;
@@ -292,7 +291,7 @@ pub async fn create_gig(
     pool: web::Data<DbPool>,
     form: web::Json<GigRequest>,
 ) -> Result<HttpResponse, ServiceError> {
-    claims.validate_permissions(&HashSet::from(["write:gigs".to_string()]))?;
+    claims.validate_permissions(&HashSet::from(["update:gigs".to_string()]))?;
 
     let gig = web::block(move || {
         let mut conn = pool.get()?;

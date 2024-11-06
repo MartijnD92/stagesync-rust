@@ -1,4 +1,5 @@
 use crate::models::gig::Gigs;
+use crate::models::user::User;
 use crate::schema::artists;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -54,6 +55,8 @@ pub struct ArtistRequest {
 
 #[derive(Serialize, Deserialize)]
 pub struct ArtistResponse {
+    #[serde(flatten)]
     pub artist: Artist,
+    pub owner: User,
     pub gigs: Gigs,
 }
