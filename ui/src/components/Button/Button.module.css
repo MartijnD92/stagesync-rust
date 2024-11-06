@@ -17,20 +17,20 @@
 }
 
 .primary {
-    background-color: var(--extra-dark-aluminium);
+    background-color: var(--extra-primary);
     color: var(--white);
 }
 
 .secondary {
     background-color: var(--aluminium);
-    color: var(--extra-dark-aluminium);
+    color: var(--extra-primary);
 }
 
 .primary:hover,
 .secondary:hover {
     background: var(--aluminium);
-    color: var(--extra-dark-aluminium);
-    border-color: var(--extra-dark-aluminium);
+    color: var(--extra-primary);
+    border-color: var(--extra-primary);
 }
 
 :last-child {

@@ -1,4 +1,5 @@
-import styles from './PageLayout.module.css'
+import s from './PageLayout.module.css'
+import SideBar from '../SideBar'
 
 interface Props {
     children: JSX.Element
@@ -6,10 +7,10 @@ interface Props {
 
 function PageLayout({ children }: Props) {
     return (
-        <div className={styles.wrapper}>
-            {/* <NavBar />
-      <MobileNavBar /> */}
-            <div className={styles.content}>{children}</div>
+        <div className={s.wrapper}>
+            <SideBar componentClass={s.sidebar} />
+            {/* <MobileNavBar /> */}
+            <div className={s.maincontent}>{children}</div>
             {/* <PageFooter /> */}
         </div>
     )

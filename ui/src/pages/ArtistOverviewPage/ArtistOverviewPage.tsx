@@ -39,32 +39,32 @@ function ArtistOverviewPage() {
 
     return (
         <PageLayout>
-            <table>
-                <tbody>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Fee</th>
-                        <th>Genre</th>
-                        <th>Based at</th>
-                        <th>Owner</th>
-                        <th>Upcoming gig</th>
-                    </tr>
-                    {artists.map((a) => (
-                        <tr key={a.id}>
-                            <td>{a.name}</td>
-                            <td>{a.description || '-'}</td>
-                            <td>
-                                {a.feeWithCurrency}
-                            </td>
-                            <td>{a.genre || '-'}</td>
-                            <td>{a.location || '-'}</td>
-                            <td>{a.ownerName}</td>
-                            <td>{(a.gigs[0] && a.gigs[0].date) || '-'}</td>
+            {(!error && (
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Fee</th>
+                            <th>Genre</th>
+                            <th>Based at</th>
+                            <th>Owner</th>
+                            <th>Upcoming gig</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                        {artists.map((a) => (
+                            <tr key={a.id}>
+                                <td>{a.name}</td>
+                                <td>{a.description || '-'}</td>
+                                <td>{a.feeWithCurrency}</td>
+                                <td>{a.genre || '-'}</td>
+                                <td>{a.location || '-'}</td>
+                                <td>{a.ownerName}</td>
+                                <td>{(a.gigs[0] && a.gigs[0].date) || '-'}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )) || <span>ERROR</span>}
         </PageLayout>
     )
 }

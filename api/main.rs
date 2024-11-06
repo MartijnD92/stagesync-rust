@@ -1,4 +1,3 @@
-use actix_files::Files;
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use diesel::{
     prelude::*,
@@ -44,8 +43,6 @@ async fn main() -> std::io::Result<()> {
             .wrap(middlewares::security_headers())
             .wrap(Logger::default())
             .service(routes::routes())
-            .service(web::resource("/").to(handlers::index))
-            .service(Files::new("/", "./static"))
     })
     .bind(("127.0.0.1", config.port))?
     .run();

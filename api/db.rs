@@ -86,14 +86,19 @@ pub fn insert_new_artist(
 pub fn get_all_artists(connection: &mut PgConnection) -> Result<Vec<ArtistResponse>, DbError> {
     use super::schema::artists::dsl::artists;
     use super::schema::gigs::dsl::{artist_id, gigs};
+    use super::schema::users::dsl::{id as user_id, users};
 
     let mut res = Vec::new();
     let data = artists.load::<Artist>(connection)?;
     for a in Some(data).iter().flatten() {
         let artist_gigs = gigs.filter(artist_id.eq(a.id)).load::<Gig>(connection)?;
+        let owner = users
+            .filter(user_id.eq(a.user_id))
+            .first::<User>(connection)?;
 
         res.push(ArtistResponse {
             artist: a.clone(),
+            owner,
             gigs: Gigs(artist_gigs),
         });
     }
@@ -106,6 +111,7 @@ pub fn get_artist_by_id(
 ) -> Result<Option<ArtistResponse>, DbError> {
     use super::schema::artists::dsl::{artists, id};
     use super::schema::gigs::dsl::{artist_id, gigs};
+    use super::schema::users::dsl::{id as user_id, users};
 
     let artist = artists
         .filter(id.eq(uuid))
@@ -117,8 +123,13 @@ pub fn get_artist_by_id(
             .filter(artist_id.eq(artist.id))
             .load::<Gig>(connection)?;
 
+        let owner = users
+            .filter(user_id.eq(artist.user_id))
+            .first::<User>(connection)?;
+
         let res = ArtistResponse {
             artist,
+            owner,
             gigs: Gigs(artist_gigs),
         };
 
@@ -129,7 +140,7 @@ pub fn get_artist_by_id(
 }
 
 pub fn delete_artist_by_id(connection: &mut PgConnection, uuid: Uuid) -> Result<usize, DbError> {
-    use super::schema::artists::dsl::{id, artists};
+    use super::schema::artists::dsl::{artists, id};
 
     let count = diesel::delete(artists.filter(id.eq(uuid))).execute(connection)?;
 
@@ -178,7 +189,7 @@ pub fn insert_new_gig(
 }
 
 pub fn delete_gig_by_id(connection: &mut PgConnection, uuid: Uuid) -> Result<usize, DbError> {
-    use super::schema::gigs::dsl::{id, gigs};
+    use super::schema::gigs::dsl::{gigs, id};
 
     let count = diesel::delete(gigs.filter(id.eq(uuid))).execute(connection)?;
 

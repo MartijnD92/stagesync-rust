@@ -5,7 +5,7 @@
 }
 
 html {
-    font-size: 10px;
+    font-size: 14px;
     text-rendering: geometricPrecision;
 }
 
@@ -18,9 +18,9 @@ body {
 }
 
 body {
-    background-color: var(--white);
+    background-color: var(--primary-extra-light);
 
-    color: var(--dark-aluminium);
+    color: var(--primary);
     font-family: var(--font-primary);
 
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -38,7 +38,7 @@ h5,
 h6 {
     font-family: var(--font-primary);
     font-weight: 600;
-    color: var(--dark-aluminium);
+    color: var(--primary);
 }
 
 h1,
