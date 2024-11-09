@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react'
-import Button from '../../components/Button'
-import s from '../../components/Button/Button.module.css'
+import Button from '../Button'
+import s from '../Button/Button.module.css'
 
 function LoginButton() {
     const { loginWithRedirect } = useAuth0()

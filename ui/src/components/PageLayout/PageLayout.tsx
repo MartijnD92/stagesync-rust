@@ -1,5 +1,5 @@
 import s from './PageLayout.module.css'
-import SideBar from '../SideBar'
+import Dashboard from '../dashboard/Dashboard'
 
 interface Props {
     children: JSX.Element
@@ -8,9 +8,8 @@ interface Props {
 function PageLayout({ children }: Props) {
     return (
         <div className={s.wrapper}>
-            <SideBar componentClass={s.sidebar} />
+            <Dashboard />
             {/* <MobileNavBar /> */}
-            <div className={s.maincontent}>{children}</div>
             {/* <PageFooter /> */}
         </div>
     )

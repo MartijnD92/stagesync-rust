@@ -22,7 +22,7 @@ const apiServerUrl = __API_SERVER_URL__
 //     }
 // }
 
-export const getUserDashboard = async (
+export const getArtistData = async (
     accessToken: string
 ): Promise<ArtistResponse> => {
     const config: AxiosRequestConfig = {
