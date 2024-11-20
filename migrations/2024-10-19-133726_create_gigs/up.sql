@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS gigs (
+CREATE TABLE gigs (
     id    UUID PRIMARY KEY NOT NULL,
     title VARCHAR NOT NULL,
     location  TEXT NOT NULL,

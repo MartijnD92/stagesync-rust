@@ -5,8 +5,9 @@ use actix_web::{web, Scope};
 pub fn routes() -> Scope {
     web::scope("/api/v1")
         // Users
-        .service(handlers::get_users)
+        .service(handlers::get_current_user)
         .service(handlers::get_user_by_id)
+        .service(handlers::get_users)
         .service(handlers::add_user)
         .service(handlers::delete_user)
         // Artists

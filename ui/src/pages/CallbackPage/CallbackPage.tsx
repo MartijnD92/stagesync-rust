@@ -23,13 +23,7 @@ function CallbackPage() {
         )
     }
 
-    return (
-        <PageLayout>
-            {/* <NavBar /> */}
-            {/* <MobileNavBar /> */}
-            <div className="page-layout__content" />
-        </PageLayout>
-    )
+    return <></>
 }
 
 export default CallbackPage

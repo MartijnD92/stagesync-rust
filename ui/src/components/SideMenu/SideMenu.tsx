@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import MenuContent from '../MenuContent/MenuContent'
 import OptionsMenu from '../OptionsMenu'
+import useData from '../../hooks/useData'
 
 const drawerWidth = 240
 
@@ -21,6 +22,9 @@ const Drawer = styled(MuiDrawer)({
 })
 
 export default function SideMenu() {
+    const [data, error] = useData('user')
+    const user = data[0]
+
     return (
         <Drawer
             variant="permanent"
@@ -42,26 +46,30 @@ export default function SideMenu() {
                     borderColor: 'divider',
                 }}
             >
-                <Avatar
-                    sizes="small"
-                    alt="Riley Carter"
-                    src="/static/images/avatar/7.jpg"
-                    sx={{ width: 36, height: 36 }}
-                />
-                <Box sx={{ mr: 'auto' }}>
-                    <Typography
-                        variant="body2"
-                        sx={{ fontWeight: 500, lineHeight: '16px' }}
-                    >
-                        Riley Carter
-                    </Typography>
-                    <Typography
-                        variant="caption"
-                        sx={{ color: 'text.secondary' }}
-                    >
-                        riley@email.com
-                    </Typography>
-                </Box>
+                {user && (
+                    <>
+                        <Avatar
+                            sizes="small"
+                            alt={`${user.first_name}`}
+                            src="/static/images/avatar/7.jpg"
+                            sx={{ width: 36, height: 36 }}
+                        />
+                        <Box sx={{ mr: 'auto' }}>
+                            <Typography
+                                variant="body2"
+                                sx={{ fontWeight: 500, lineHeight: '16px' }}
+                            >
+                                {`${user.first_name} ${user.last_name}`}
+                            </Typography>
+                            <Typography
+                                variant="caption"
+                                sx={{ color: 'text.secondary' }}
+                            >
+                                {user.email}
+                            </Typography>
+                        </Box>
+                    </>
+                )}
                 <OptionsMenu />
             </Stack>
         </Drawer>

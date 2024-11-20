@@ -1,8 +1,10 @@
 import { DataGrid } from '@mui/x-data-grid'
 import useData from '../../hooks/useData'
+import { mapDataToGrid } from '../../helpers/mappings'
 
 export default function CustomizedDataGrid() {
     const [data, error] = useData('artist')
+    const { columns, rows } = mapDataToGrid(data)
 
     return (
         <DataGrid

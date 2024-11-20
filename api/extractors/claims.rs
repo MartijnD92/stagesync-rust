@@ -1,3 +1,4 @@
+use crate::db;
 use crate::errors::{ClientError, ServiceError};
 use actix_web::{http::Uri, Error, FromRequest};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
@@ -27,6 +28,7 @@ impl Default for Auth0Config {
 #[derive(Debug, Deserialize)]
 pub struct Claims {
     permissions: Option<HashSet<String>>,
+    sub: Option<String>,
 }
 
 impl Claims {
@@ -34,6 +36,7 @@ impl Claims {
         &self,
         required_permissions: &HashSet<String>,
     ) -> Result<(), ServiceError> {
+        
         self.permissions.as_ref().map_or(
             Err(ServiceError::BadRequest(String::from(
                 "Unable to parse permissions",
@@ -48,6 +51,12 @@ impl Claims {
                 }
             },
         )
+    }
+
+    pub fn get_auth0_sub(&self) -> Result<String, ServiceError> {
+        self.sub.to_owned().ok_or_else(|| {
+            ServiceError::BadRequest(String::from("Unable to retrieve sub from claims"))
+        })
     }
 }
 
@@ -67,7 +76,7 @@ impl FromRequest for Claims {
             let token = credentials.token();
             let header = decode_header(token).map_err(ClientError::Decode)?;
             let kid = header.kid.ok_or_else(|| {
-                ClientError::NotFound("kid not found in token header".to_string())
+                ClientError::NotFound("Kid not found in token header".to_string())
             })?;
             let domain = config.domain.as_str();
             let jwks: JwkSet = Client::new()

@@ -8,7 +8,7 @@ function SignupButton() {
     const handleSignUp = async () => {
         await loginWithRedirect({
             appState: {
-                returnTo: '/profile',
+                returnTo: '/artists',
             },
             authorizationParams: {
                 prompt: 'login',

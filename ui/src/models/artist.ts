@@ -17,6 +17,7 @@ export interface Artist {
 }
 
 export interface ArtistFormatted extends Artist {
-    ownerName: string;
-    feeWithCurrency: string;
+    owner_name: string
+    fee_with_currency: string
+    next_gig: string
 }

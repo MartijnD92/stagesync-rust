@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS artists (
+CREATE TABLE artists (
     id UUID PRIMARY KEY NOT NULL,
     name VARCHAR NOT NULL,
     description TEXT,

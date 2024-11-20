@@ -6,7 +6,9 @@ import HomePage from './pages/HomePage'
 import CallbackPage from './pages/CallbackPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ProfilePage from './pages/ProfilePage'
-import ArtistOverviewPage from './pages/ArtistOverviewPage'
+import DashboardPage from './pages/DashboardPage'
+import BookingsPage from './pages/BookingsPage'
+import ArtistsPage from './pages/ArtistsPage'
 
 function App() {
     const { isLoading } = useAuth0()
@@ -23,8 +25,16 @@ function App() {
         <Routes>
             <Route path="/" element={<HomePage />} />
             <Route
+                path="/dashboard"
+                element={<AuthenticationGuard component={DashboardPage} />}
+            />
+            <Route
+                path="/bookings"
+                element={<AuthenticationGuard component={BookingsPage} />}
+            />
+            <Route
                 path="/artists"
-                element={<AuthenticationGuard component={ArtistOverviewPage} />}
+                element={<AuthenticationGuard component={ArtistsPage} />}
             />
             <Route
                 path="/profile"

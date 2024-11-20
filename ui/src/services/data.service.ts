@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios'
-import { ArtistResponse } from '../models/api-response'
+import { ArtistResponse, UserResponse } from '../models/api-response'
 import callExternalApi from './external-api.service'
 import { formatArtist } from '../services/helpers/mappings'
 
@@ -39,27 +39,29 @@ export const getArtistData = async (
     })
 
     return {
-        data: data?.map(formatArtist) || null,
+        data: data?.map(formatArtist),
         error,
     }
 }
 
-// export const getAdminResource = async (
-//     accessToken: string
-// ): Promise<ApiResponse> => {
-//     const config: AxiosRequestConfig = {
-//         url: `${apiServerUrl}/api/v1/users`,
-//         method: 'GET',
-//         headers: {
-//             'content-type': 'application/json',
-//             Authorization: `Bearer ${accessToken}`,
-//         },
-//     }
+export const getProfileData = async (
+    accessToken: string
+): Promise<UserResponse> => {
+    const config: AxiosRequestConfig = {
+        url: `${apiServerUrl}/api/v1/users/me`,
+        method: 'GET',
+        headers: {
+            'content-type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+        },
+    }
 
-//     const { data, error } = (await callExternalApi({ config })) as ApiResponse
+    const { data, error } = await callExternalApi<'user'>({
+        config,
+    })
 
-//     return {
-//         data,
-//         error,
-//     }
-// }
+    return {
+        data,
+        error,
+    }
+}

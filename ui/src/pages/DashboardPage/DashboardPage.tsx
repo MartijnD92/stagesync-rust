@@ -1,7 +1,7 @@
 import Dashboard from '../../components/Dashboard'
 
-function ArtistOverviewPage() {
+function DashboardPage() {
     return <Dashboard />
 }
 
-export default ArtistOverviewPage
+export default DashboardPage

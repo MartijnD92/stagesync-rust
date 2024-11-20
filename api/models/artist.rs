@@ -38,7 +38,7 @@ pub struct NewArtist<'a> {
     pub updated_at: chrono::NaiveDateTime,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ArtistRequest {
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -53,7 +53,7 @@ pub struct ArtistRequest {
     pub location: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct ArtistResponse {
     #[serde(flatten)]
     pub artist: Artist,

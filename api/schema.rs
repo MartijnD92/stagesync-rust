@@ -17,6 +17,13 @@ diesel::table! {
 }
 
 diesel::table! {
+    auth0_users (user_id) {
+        user_id -> Uuid,
+        auth0_sub -> Varchar,
+    }
+}
+
+diesel::table! {
     gigs (id) {
         id -> Uuid,
         title -> Varchar,
@@ -40,10 +47,12 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(auth0_users -> users (user_id));
 diesel::joinable!(gigs -> artists (artist_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     artists,
+    auth0_users,
     gigs,
     users,
 );

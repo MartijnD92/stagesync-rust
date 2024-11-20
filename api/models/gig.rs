@@ -18,7 +18,7 @@ pub struct Gig {
     pub updated_at: chrono::NaiveDateTime,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct GigRequest {
     pub title: String,
     pub location: String,

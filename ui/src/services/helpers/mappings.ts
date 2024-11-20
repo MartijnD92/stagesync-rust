@@ -1,18 +1,23 @@
 import { Artist, ArtistFormatted } from '../../models/artist'
-export function formatArtist(a: Artist): ArtistFormatted {
-    const gigs = a.gigs.map((g) => {
+
+export function formatArtist(artist: Artist): ArtistFormatted {
+    const gigs = artist.gigs.map((gig) => {
         return {
-            ...g,
-            date: new Date(g.date).toLocaleDateString('nl-NL'),
+            ...gig,
+            date: new Date(gig.date).toLocaleDateString('nl-NL'),
         }
     })
 
     return {
-        ...a,
-        ownerName: `${a.owner.first_name} ${a.owner.last_name}`,
-        feeWithCurrency: `${a.currency} ${a.fee.toLocaleString('nl-NL', {
-            minimumFractionDigits: 2,
-        })}`,
+        ...artist,
+        owner_name: `${artist.owner.first_name} ${artist.owner.last_name}`,
+        fee_with_currency: `${artist.currency} ${artist.fee.toLocaleString(
+            'nl-NL',
+            {
+                minimumFractionDigits: 2,
+            }
+        )}`,
         gigs,
+        next_gig: gigs[0] ? `${gigs[0]?.date} / ${gigs[0]?.location}` : '',
     }
 }

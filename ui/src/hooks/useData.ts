@@ -13,7 +13,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import {
     getArtistData,
     // getGigData,
-    // getUserData,
+    getProfileData,
 } from '../services/data.service'
 
 type DataType = {
@@ -28,11 +28,10 @@ type ResponseType = {
     user: UserResponse
 }
 
-function useData<T extends keyof DataType>(
-    type: T
-): [DataType[T][] | null, AppError | null] {
-    const [data, setData] = React.useState<DataType[T][] | null>(null)
+function useData<T extends keyof DataType>(type: T): [DataType[T][], AppError] {
+    const [data, setData] = React.useState<DataType[T][]>([])
     const [error, setError] = React.useState<AppError | null>(null)
+
     const { getAccessTokenSilently } = useAuth0()
 
     const fetchFunction = React.useMemo(() => {
@@ -41,8 +40,8 @@ function useData<T extends keyof DataType>(
                 return getArtistData
             // case 'gig':
             //     return getGigData
-            // case 'user':
-            //     return getUserData
+            case 'user':
+                return getProfileData
         }
     }, [type])
 
@@ -59,7 +58,11 @@ function useData<T extends keyof DataType>(
                 if (!isMounted) return
 
                 if (response.data) {
-                    setData(response.data as DataType[T][])
+                    if (Array.isArray(response.data)) {
+                        setData(response.data as DataType[T][])
+                    } else {
+                        setData([response.data] as DataType[T][])
+                    }
                 }
                 if (response.error) {
                     setError(response.error)

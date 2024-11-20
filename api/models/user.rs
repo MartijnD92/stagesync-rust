@@ -1,3 +1,4 @@
+use crate::schema::auth0_users;
 use crate::schema::users;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -12,6 +13,14 @@ pub struct User {
     pub image: Option<String>,
     pub created_at: chrono::NaiveDateTime,
     pub updated_at: chrono::NaiveDateTime,
+}
+
+#[derive(Queryable, Insertable, Associations, Serialize, Deserialize, Debug)]
+#[diesel(table_name = auth0_users)]
+#[diesel(belongs_to(User, foreign_key = user_id))]
+pub struct Auth0Users {
+    pub user_id: uuid::Uuid,
+    pub auth0_sub: String,
 }
 
 #[derive(Insertable, Debug)]

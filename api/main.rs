@@ -1,8 +1,4 @@
-use actix_web::{middleware::Logger, web, App, HttpServer};
-use diesel::{
-    prelude::*,
-    r2d2::{self, ConnectionManager},
-};
+use actix_web::{middleware::Logger, App, HttpServer};
 use dotenvy::dotenv;
 
 mod db;
@@ -26,19 +22,10 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
     let config = types::Config::default();
     let auth0_config = extractors::Auth0Config::default();
-    // env::set_var("RUST_LOG", "info");
-    // env::set_var("RUST_BACKTRACE", "1");
-    // env_logger::init();
-
-    let manager = ConnectionManager::<PgConnection>::new(config.database_url);
-    let pool = r2d2::Pool::builder()
-        .build(manager)
-        .expect("Failed to create pool.");
 
     let app = HttpServer::new(move || {
         App::new()
             .app_data(auth0_config.clone())
-            .app_data(web::Data::new(pool.clone()))
             .wrap(middlewares::cors(&config.client_origin_url))
             .wrap(middlewares::security_headers())
             .wrap(Logger::default())

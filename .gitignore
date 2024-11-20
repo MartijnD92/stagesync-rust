@@ -3,4 +3,4 @@
 /.cargo/.build
 .env
 .DS_Store
-stagesync.db
+/api/migrations/*_generate_dummy_data/*
