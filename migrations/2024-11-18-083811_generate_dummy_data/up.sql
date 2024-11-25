@@ -1,6 +1,6 @@
 INSERT INTO users(id, first_name, last_name, email) 
 VALUES
-('d43dad85-eb6e-45f5-87c2-24ade9fb678f', 'Martijn', 'Doensen', 'martijn.doensen@live.nl');
+('d43dad85-eb6e-45f5-87c2-24ade9fb678f', 'Martijn', 'Doensen', 'martijn@stagesync.nl');
 
 INSERT INTO auth0_users(user_id, auth0_sub) 
 VALUES
@@ -8,9 +8,9 @@ VALUES
 
 INSERT INTO artists(id, name, fee, currency, user_id) 
 VALUES
-(gen_random_uuid(), 'The Hillbilly Moonshiners', 3000.00, 'EUR', (SELECT id FROM users WHERE email = 'martijn.doensen@live.nl')),
-(gen_random_uuid(), 'Pink Floyd', 1_000_000.00, 'GBP', (SELECT id FROM users WHERE email = 'martijn.doensen@live.nl')),
-(gen_random_uuid(), 'AC/DC', 2_000_000.50, 'AUD', (SELECT id FROM users WHERE email = 'martijn.doensen@live.nl'));
+(gen_random_uuid(), 'The Hillbilly Moonshiners', 3000.00, 'EUR', (SELECT id FROM users WHERE email = 'martijn@stagesync.nl')),
+(gen_random_uuid(), 'Pink Floyd', 1_000_000.00, 'GBP', (SELECT id FROM users WHERE email = 'martijn@stagesync.nl')),
+(gen_random_uuid(), 'AC/DC', 2_000_000.50, 'AUD', (SELECT id FROM users WHERE email = 'martijn@stagesync.nl'));
 
 INSERT INTO gigs(id, title, location, date, artist_id) 
 VALUES
