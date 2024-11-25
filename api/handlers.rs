@@ -11,8 +11,7 @@ use uuid::Uuid;
 
 #[get("/users/me")]
 pub async fn get_current_user(claims: Claims) -> Result<HttpResponse, ServiceError> {
-    let sub = claims.get_auth0_sub()?;
-    let user = web::block(move || db::get_current_user_by_auth0_sub(&sub))
+    let user = web::block(move || db::get_user_from_claims(&claims))
         .await?
         .map_err(|_| ServiceError::InternalServerError)?;
 
@@ -115,6 +114,37 @@ async fn delete_user(claims: Claims, id: web::Path<Uuid>) -> Result<HttpResponse
     }
 }
 
+#[get("/artists/me")]
+pub async fn get_artists_for_user(claims: Claims) -> Result<HttpResponse, ServiceError> {
+    claims.validate_permissions(&HashSet::from(["read:artists".to_string()]))?;
+
+    let current_user = web::block(move || db::get_user_from_claims(&claims))
+        .await?
+        .map_err(|_| ServiceError::InternalServerError)?;
+
+    if let Some(user) = current_user {
+        let artists = web::block(move || db::get_artists_for_user(user.id))
+            .await?
+            .map_err(|_| ServiceError::InternalServerError)?;
+
+        if !artists.is_empty() {
+            return Ok(HttpResponse::Ok().json(artists));
+        }
+        Ok(HttpResponse::NotFound().body(
+            json!({
+                "error": 404,
+                "message": "No artists were found.",
+            })
+            .to_string(),
+        ))
+    } else {
+        Ok(HttpResponse::Unauthorized().json(json!({
+            "error": 401,
+            "message": "Unauthorized user."
+        })))
+    }
+}
+
 #[get("/artists")]
 pub async fn get_artists(claims: Claims) -> Result<HttpResponse, ServiceError> {
     claims.validate_permissions(&HashSet::from(["read:artists".to_string()]))?;
@@ -129,7 +159,7 @@ pub async fn get_artists(claims: Claims) -> Result<HttpResponse, ServiceError> {
         let res = HttpResponse::NotFound().body(
             json!({
                 "error": 404,
-                "message": "No users were found.",
+                "message": "No artists were found.",
             })
             .to_string(),
         );

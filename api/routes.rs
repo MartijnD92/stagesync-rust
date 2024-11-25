@@ -11,6 +11,7 @@ pub fn routes() -> Scope {
         .service(handlers::add_user)
         .service(handlers::delete_user)
         // Artists
+        .service(handlers::get_artists_for_user)
         .service(handlers::get_artists)
         .service(handlers::get_artist_by_id)
         .service(handlers::add_artist)

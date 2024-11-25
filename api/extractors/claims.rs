@@ -36,7 +36,6 @@ impl Claims {
         &self,
         required_permissions: &HashSet<String>,
     ) -> Result<(), ServiceError> {
-        
         self.permissions.as_ref().map_or(
             Err(ServiceError::BadRequest(String::from(
                 "Unable to parse permissions",

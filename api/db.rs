@@ -1,3 +1,5 @@
+use crate::errors::ServiceError;
+use crate::extractors::Claims;
 use crate::models::artist::{Artist, ArtistRequest, ArtistResponse, NewArtist};
 use crate::models::gig::{Gig, GigRequest, Gigs};
 use crate::models::user::{NewUser, User, UserRequest};
@@ -69,10 +71,13 @@ pub fn get_user_by_id(uuid: Uuid) -> Result<Option<User>, DbError> {
     Ok(user)
 }
 
-pub fn get_current_user_by_auth0_sub(sub: &str) -> Result<Option<User>, DbError> {
+pub fn get_user_from_claims(claims: &Claims) -> Result<Option<User>, DbError> {
     use super::schema::auth0_users;
     use super::schema::users;
     let mut conn = get_connection()?;
+    let sub = claims
+        .get_auth0_sub()
+        .expect("Could not parse sub from claims");
 
     let user: Option<User> = users::table
         .inner_join(auth0_users::table.on(auth0_users::user_id.eq(users::id)))
@@ -144,14 +149,16 @@ pub fn get_all_artists() -> Result<Vec<ArtistResponse>, DbError> {
     Ok(res)
 }
 
-pub fn get_all_artists_for_current_user() -> Result<Vec<ArtistResponse>, DbError> {
+pub fn get_artists_for_user(user_id: Uuid) -> Result<Vec<ArtistResponse>, DbError> {
     use super::schema::artists;
     use super::schema::gigs;
     use super::schema::users;
     let mut conn = get_connection()?;
 
     let mut res = Vec::new();
-    let data: Vec<Artist> = artists::table.load(&mut conn)?;
+    let data: Vec<Artist> = artists::table
+        .filter(artists::user_id.eq(user_id))
+        .load(&mut conn)?;
     for artist in Some(data).iter().flatten() {
         let artist_gigs: Vec<Gig> = gigs::table
             .filter(gigs::artist_id.eq(artist.id))
