@@ -26,6 +26,28 @@ export const getArtistData = async (
     accessToken: string
 ): Promise<ArtistResponse> => {
     const config: AxiosRequestConfig = {
+        url: `${apiServerUrl}/api/v1/artists/me`,
+        method: 'GET',
+        headers: {
+            'content-type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+        },
+    }
+
+    const { data, error } = await callExternalApi<'artist'>({
+        config,
+    })
+
+    return {
+        data: data?.map(formatArtist) || null,
+        error,
+    }
+}
+
+export const getArtistDataAdmin = async (
+    accessToken: string
+): Promise<ArtistResponse> => {
+    const config: AxiosRequestConfig = {
         url: `${apiServerUrl}/api/v1/artists`,
         method: 'GET',
         headers: {
@@ -39,7 +61,7 @@ export const getArtistData = async (
     })
 
     return {
-        data: data?.map(formatArtist),
+        data: data?.map(formatArtist) || null,
         error,
     }
 }
