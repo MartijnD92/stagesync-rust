@@ -33,6 +33,9 @@ cargo run
 The API should now be available at `http://127.0.0.1:8080/`.
 
 ## Available endpoints
+> [!WARNING]
+> *These endpoints are now all protected by an Auth0 layer. So in the codebase's current state, they're only available after signing up.*
+
 Make sure to prefix all endpoints with `/api/v1`.
 
 | Method | Endpoint            | Description                       |
